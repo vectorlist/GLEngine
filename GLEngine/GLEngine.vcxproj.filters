@@ -13,10 +13,83 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{b149c66f-6e6f-467a-a220-d10f0bf9e96d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{5e56ed0d-7b2f-4200-a300-1722bed2e5e7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\include\core\vec3f.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\core\color.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\core\matrix4x4.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Input.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\core\vec2f.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\core\vec3f.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\core\vml.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\core\color.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\core\matrix4x4.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\config.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Input.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\data\shader\main.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\data\shader\main.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
