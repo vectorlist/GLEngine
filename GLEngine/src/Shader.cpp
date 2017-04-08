@@ -2,22 +2,25 @@
 #include <fstream>
 #include <sstream>
 
-std::string Shader::codeFromFile(const char * file)
+std::string Shader::codeFromFile(const std::string &filename)
 {
-	std::string source;
-	std::ifstream filestream;
-
-	filestream.exceptions(std::ifstream::badbit);
-
+	std::string bits;
+	std::ifstream filestream(filename, std::ios::in);
+	if (!filestream.is_open())
+	{
+		std::string err = "failed to load file : ";
+		err.append(filename);
+		LOG_ERROR(err);
+	}
 	
-	filestream.open(file);
-
-	std::stringstream stream;
-	stream << filestream.rdbuf();
+	std::string line = "";
+	while (!filestream.eof())
+	{
+		std::getline(filestream, line);
+		bits.append(line + "\n");
+	}
 	filestream.close();
-	source = stream.str();
-	
-	return source;
+	return bits;
 }
 
 GLuint Shader::compile(const GLchar *code, const GLenum type, const char* path)
@@ -32,7 +35,7 @@ GLuint Shader::compile(const GLchar *code, const GLenum type, const char* path)
 
 	if (!success) {
 		glGetShaderInfoLog(shader, 512, NULL, info_log);
-		error(info_log);
+		LOG_ERROR(info_log);
 	}
 
 	return shader;
@@ -59,7 +62,7 @@ GLuint Shader::load(const char * vertpath, const char * fragpath)
 	glGetProgramiv(program, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(program, 512, NULL, info_log);
-		error(info_log);
+		LOG_ERROR(info_log);
 	}
 
 	//we dont need shader anymore
@@ -68,13 +71,35 @@ GLuint Shader::load(const char * vertpath, const char * fragpath)
 
 	glUseProgram(program);
 	
-	
 	return program;
 }
 
-
-void Shader::error(const std::string &errorMsg)
+void Shader::setUniform1i(GLuint &program, uint32_t data, const char* name)
 {
-	LOG << "error : " << errorMsg << ENDL;
+	glUniform1i(glGetUniformLocation(program, name), data);
 }
 
+void Shader::setUniform1f(GLuint &program, float data, const char* name)
+{
+	glUniform1f(glGetUniformLocation(program, name), data);
+}
+
+void Shader::setUniForm2i(GLuint &program, const vec2i &data, const char* name)
+{
+	glUniform2i(glGetUniformLocation(program, name), data.x,data.y);
+}
+
+void Shader::setUniForm2f(GLuint &program, const vec2f &data, const char* name)
+{
+	glUniform2f(glGetUniformLocation(program, name), data.x, data.y);
+}
+
+void Shader::setUniForm3f(GLuint &program, const vec3f &data, const char* name)
+{
+	glUniform3f(glGetUniformLocation(program, name), data.x, data.y, data.z);
+}
+
+void Shader::setUniformMatrix4f(GLuint &program, const Matrix4x4 &mat, const char* name, bool transpose)
+{
+	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, transpose, mat.constData());
+}

@@ -19,6 +19,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{5e56ed0d-7b2f-4200-a300-1722bed2e5e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Map">
+      <UniqueIdentifier>{1be449e0-0036-4b8e-8404-c9fcc8918ccc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\include\core\vec3f.cpp">
@@ -46,7 +49,13 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Shader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>src\Map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,12 +92,24 @@
     <ClInclude Include="src\Shader.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Mesh.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texture.h">
+      <Filter>src\Map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\data\shader\main.vert">
+    <None Include="..\data\shader\flat.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\data\shader\main.frag">
+    <None Include="..\data\shader\flat.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\data\shader\forward.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\data\shader\forward.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

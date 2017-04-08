@@ -1,30 +1,6 @@
 #pragma once
 
-#include <config.h>
-
-
-//test
-class Mesh
-{
-public:
-	Mesh(
-		const std::vector<float> &vertex,
-		const std::vector<uint32_t> *index = 0);
-	~Mesh();
-
-	const std::vector<float> &vertices;
-	const std::vector<uint32_t> &indices;
-
-	GLuint vao;
-
-	std::vector<GLuint> vbos;
-	void buildBuffer();
-
-	bool has_ibo = true;
-
-private:
-	void releaseBuffer();
-};
+#include <Mesh.h>
 
 class Model
 {

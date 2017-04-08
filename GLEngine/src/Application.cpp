@@ -17,6 +17,8 @@ Application::~Application()
 bool Application::buildWindow()
 {
 	SDL_Init(SDL_INIT_VIDEO);
+	IMG_Init(IMG_INIT_PNG);
+	IMG_Init(IMG_INIT_JPG);
 	//
 	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		width, height, SDL_WINDOW_OPENGL);
@@ -47,6 +49,7 @@ void Application::run(Renderer *renderer)
 	
 	renderer->initialize();					//clear color and setting
 	renderer->resize(width, height);			//for viewport
+	renderer->updateUniforms();				//update uniform to all shader
 
 	SDL_GL_SwapWindow(window);				//init swap buffer
 
@@ -61,6 +64,7 @@ void Application::run(Renderer *renderer)
 
 void Application::releaseWindow()
 {
+	IMG_Quit();
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

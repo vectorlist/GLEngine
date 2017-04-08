@@ -12,7 +12,7 @@ void Input::event(Renderer & renderer, SDL_Window * window)
 		}
 		else if (e.type == SDL_KEYDOWN)
 		{
-			LOG << "key event" << ENDL;
+			//LOG << "key event" << ENDL;
 			keyPressEvent(renderer, e);
 		}
 	}
@@ -23,11 +23,13 @@ void Input::keyPressEvent(Renderer &renderer, SDL_Event &e)
 	switch(e.key.keysym.sym)
 	{
 	case SDLK_1 :
-		renderer.mode = MODE_DEFAULT;
+		LOG << "Forward Mode" << ENDL;
+		renderer.mode = MODE_FORWARD;
 		break;
 
 	case SDLK_2:
-		renderer.mode = MODE_SECOND;
+		LOG << "Flat Mode" << ENDL;
+		renderer.mode = MODE_FLAT;
 		break;
 	}
 }
