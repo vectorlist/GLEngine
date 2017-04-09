@@ -8,6 +8,7 @@
 #include <Shader.h>
 #include <Texture.h>
 #include <SDL2/SDL_image.h>
+#include <Geometry.h>
 
 //const std::vector<float> v1 = {
 //	-0.5f, -0.5f, 0.0f,
@@ -48,26 +49,26 @@ const std::vector<uint32_t>i1 =
 	0,1,2,
 	2,3,0
 };
-//------------------------
+//---------- ground --------------
 const std::vector<float> v2 = {
-	5, 0.0, 5,
-	-5,0, 5,
-	-5,0,-5,
-	5,0,-5
+	50, 0.0, 50,
+	-50,0, 50,
+	-50,0,-50,
+	50,0,-50
 };
 
 const std::vector<float> n2 = {
-	1, 0, 0.0f,
 	0, 1, 0.0f,
-	0,  0, 1.f,
-	1,  1, 0
+	0, 1, 0.0f,
+	0,  1, 0.f,
+	0,  1, 0
 };
 
 const std::vector<float> st2 = {
-	1.0, 1.0,
-	0.0, 1.0,
+	50.0, 50.0,
+	0.0, 50.0,
 	0.0, 0.0,
-	1.0, 0.0
+	50.0, 0.0
 };
 
 
@@ -98,6 +99,7 @@ void setRenderSetting(Renderer &renderer)
 	mesh1->st = st1;
 	mesh1->indices = i1;
 	mesh1->buildBuffer();
+	mesh1->map.diffuse = Mesh::load(DIR_TEXTURE"checker.jpg");
 
 	mesh_ptr mesh2 = mesh_ptr(new Mesh);
 	mesh2->vertices = v2;
@@ -105,20 +107,25 @@ void setRenderSetting(Renderer &renderer)
 	mesh2->st = st2;
 	mesh2->indices = i2;
 	mesh2->buildBuffer();
-
+	/*mesh2->map.diffuse = Mesh::load(DIR_TEXTURE"ground_diffuse.jpg",false);*/
+	mesh2->map.diffuse = Mesh::load(DIR_TEXTURE"ground_normal.jpg", false);
 	model1->meshs.push_back(mesh1);
 	model1->meshs.push_back(mesh2);
 	
-	Mesh::load("E:/github/GLEngine/data/texture/checker.jpg");
-	
-	//renderer.models.push_back(std::move(m1));
 	renderer.addElement(model1);
+
+	//Geometry (Terrain)
+	geometry_ptr geo1 = geometry_ptr(new Geometry());
+	//geo1->loadHeightMap(DIR_HEIGHTMAP"height_map_small.jpg", 300);     //scaling size
+	//geo1->loadTerrain(DIR_HEIGHTMAP"height_map_ss.jpg",200,30,64);     //scaling size
+	geo1->buildFlatTerrain();
+	renderer.addElement(geo1);
 	
 	//Shader
 	renderer.shaders[SHADER_FORWARD] = Shader::load(DIR_SHADER"forward.vert",DIR_SHADER"forward.frag");
-	//TODO : need fix program conversations
-	//renderer.shaders[SHADER_FLAT] = Shader::load(DIR_SHADER"flat.vert", DIR_SHADER"flat.frag");
-	//renderer.shader[SHADER_FLAT] = Shader::load("", "");
+	renderer.shaders[SHADER_TERRAIN] = Shader::load(DIR_SHADER"terrain.vert", DIR_SHADER"terrain.frag");
+	renderer.shaders[SHADER_FLAT] = Shader::load(DIR_SHADER"flat.vert", DIR_SHADER"flat.frag");
+
 }
 
 void initTextures(Renderer &renderer)
@@ -128,8 +135,9 @@ void initTextures(Renderer &renderer)
 	{
 		for (auto mesh : m->meshs)
 		{
-			LOG << "add diffuse texture to " << mesh_num << " mesh" << ENDL;
-			mesh->map.diffuse = Mesh::global_textures[SHADER_FORWARD];
+			//LOG << "add diffuse texture to " << mesh_num << " mesh" << ENDL;
+			if(mesh->map.diffuse->id == TEXTURE_NONE)
+				mesh->map.diffuse = Mesh::global_textures[SHADER_FORWARD];
 			mesh_num++;
 		}
 	}

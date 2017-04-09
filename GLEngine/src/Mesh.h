@@ -41,6 +41,10 @@ public:
 	Maps map;
 	GLuint vbos[VBO_NUM];
 	GLuint ibo;
+	//properties
+	uint32_t indice_size;
+	uint32_t vertices_size;
+
 	//GLuint vbo;
 	void buildBuffer();
 

@@ -28,6 +28,11 @@ void Input::keyPressEvent(Renderer &renderer, SDL_Event &e)
 		break;
 
 	case SDLK_2:
+		LOG << "Terrain Mode" << ENDL;
+		renderer.mode = MODE_TERRAIN;
+		break;
+
+	case SDLK_3:
 		LOG << "Flat Mode" << ENDL;
 		renderer.mode = MODE_FLAT;
 		break;

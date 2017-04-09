@@ -124,6 +124,7 @@
     <ClCompile Include="..\include\core\matrix4x4.cpp" />
     <ClCompile Include="..\include\core\vec3f.cpp" />
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\include\core\vml.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\config.h" />
+    <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Model.h" />

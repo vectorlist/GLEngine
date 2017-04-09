@@ -53,8 +53,9 @@ void Mesh::buildBuffer()
 	//finish vao bounding
 	glBindVertexArray(0);
 
-	//add vbo
-
+	//
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, NULL);
 }
 
 void Mesh::releaseBuffer()

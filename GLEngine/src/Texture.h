@@ -9,9 +9,11 @@ enum Texture_Type
 	NORMAL
 };
 
+#define TEXTURE_NONE UINT_MAX
+
 struct Texture
 {
-	GLuint id;
+	GLuint id = TEXTURE_NONE;
 	Texture_Type type;
 	std::string path;
 
