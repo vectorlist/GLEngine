@@ -18,7 +18,7 @@ Renderer::~Renderer()
 void Renderer::initialize()
 {
 	glClearColor(0, 1, 1, 1);
-	glEnable(GL_DEPTH_TEST);
+	/*glEnable(GL_DEPTH_TEST);*/
 
 }
 
@@ -41,6 +41,7 @@ void Renderer::render()
 	}
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	glBindVertexArray(0);
 	glUseProgram(0);
 	//we dont need swapbuffer(SDL_GL_swapwindow())
 	frame++;
@@ -104,10 +105,12 @@ void Renderer::render_forward()
 			glBindTexture(GL_TEXTURE_2D, mesh->map.diffuse->id);
 
 			//Normal
+			
 			glActiveTexture(GL_TEXTURE1);
 			GLuint normal_id = glGetUniformLocation(shader_defualt, "normal_map");
 			glUniform1i(normal_id, 1);
 			glBindTexture(GL_TEXTURE_2D, mesh->map.normal->id);
+			
 			//VAO
 			glBindVertexArray(mesh->vao);
 			//glDrawArrays(GL_TRIANGLES, 0, 3);

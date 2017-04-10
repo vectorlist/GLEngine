@@ -18,7 +18,7 @@ void Model::loadModel(const std::string & filename)
 	const aiScene* scene = importer.ReadFile(filename,
 		aiProcess_Triangulate | 
 		aiProcess_FlipUVs | 
-		aiProcess_GenNormals | 
+		/*aiProcess_GenNormals | */
 		aiProcess_CalcTangentSpace);
 
 	//enable post normals and tagent

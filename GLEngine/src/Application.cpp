@@ -17,15 +17,15 @@ Application::~Application()
 bool Application::buildWindow()
 {
 	SDL_Init(SDL_INIT_VIDEO);
-	IMG_Init(IMG_INIT_PNG);
-	IMG_Init(IMG_INIT_JPG);
+	//IMG_Init(IMG_INIT_PNG);
+	//IMG_Init(IMG_INIT_JPG);
 	//
 	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		width, height, SDL_WINDOW_OPENGL);
 	
 	if (!window)
 	{
-		LOG << "failed to create window" << ENDL;
+		LOG_ERROR("failed to create window");
 		return false;
 	}
 	
@@ -38,8 +38,19 @@ bool Application::buildWindow()
 	
 	//glew for application
 	glewExperimental = GL_TRUE;
-	glewInit();
 	
+	if (glewInit() != GLEW_OK) {
+		LOG_ERROR("failed to init glew");
+		return false;
+	}
+	
+	glEnable(GL_DEPTH_TEST);
+
+	SDL_GL_SwapWindow(window);				//init swap buffer
+	/*if (SDL_GL_SetSwapInterval(0) != 0) {
+			printf("WARNING: Unable to disable vsync, %s\n", SDL_GetError());
+			LOG_ERROR("damn");
+		}*/
 	return true;
 }
 
@@ -50,8 +61,6 @@ void Application::run(Renderer *renderer)
 	renderer->initialize();					//clear color and setting
 	renderer->resize(width, height);			//for viewport
 	renderer->updateUniforms();				//update uniform to all shader
-
-	SDL_GL_SwapWindow(window);				//init swap buffer
 
 	renderer->isRunninig = true;
 	while (renderer->isRunninig)
@@ -64,7 +73,7 @@ void Application::run(Renderer *renderer)
 
 void Application::releaseWindow()
 {
-	IMG_Quit();
+	//IMG_Quit();
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

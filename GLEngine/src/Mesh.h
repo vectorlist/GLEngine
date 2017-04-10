@@ -19,9 +19,9 @@ struct Vertex
 
 struct Maps
 {
-	Texture* diffuse;
-	Texture* normal;
-	Texture* specualr;
+	Texture* diffuse = NULL;
+	Texture* normal = NULL;
+	Texture* specualr = NULL;
 };
 
 #define MAP_MAX_NUM		3

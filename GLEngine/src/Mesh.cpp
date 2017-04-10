@@ -18,7 +18,14 @@ void Mesh::buildBuffer()
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
+	glGenBuffers(1, &ibo);
 	glGenBuffers(4, vbos);
+
+	//indices
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]),
+		indices.data(), GL_STATIC_DRAW);
+
 	//vertex
 	glBindBuffer(GL_ARRAY_BUFFER, vbos[VBO_VERTEX]);					//index 0 for vertex
 	glBufferData(GL_ARRAY_BUFFER, (vertices.size() * 3) * sizeof(float),
@@ -43,19 +50,19 @@ void Mesh::buildBuffer()
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
 	glEnableVertexAttribArray(2);
 
-	//indices
-	glGenBuffers(1, &ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]),
-		indices.data(), GL_STATIC_DRAW);
+	//tangent
+	glBindBuffer(GL_ARRAY_BUFFER, vbos[VBO_TANGENT]);					//index 1 for texture coords
+	glBufferData(GL_ARRAY_BUFFER, (tangent.size() * 3) * sizeof(float),
+		tangent.data(), GL_STATIC_DRAW);
 
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glEnableVertexAttribArray(3);
+
+	
 
 	//finish vao bounding
 	glBindVertexArray(0);
 
-	//
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, NULL);
 }
 
 void Mesh::releaseBuffer()

@@ -40,8 +40,8 @@ void Input::keyPressEvent(Renderer &renderer, SDL_Event &e)
 	case SDLK_t:
 		LOG << "switch texture" << ENDL;
 		for (auto m : renderer.models) {
-			if (m->texswitch < 0.f)
-				m->texswitch = 1.f;
+			if (m->texswitch < 3.f)
+				m->texswitch += 1.f;
 			else
 				m->texswitch = -1.f;
 			LOG << m->texswitch << ENDL;;

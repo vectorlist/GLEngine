@@ -34,8 +34,8 @@ void main()
     //TBN to world
     vec3 T = normalize(vec3(model * vec4(tangent, 0.0)));
     vec3 N = normalize(vec3(model * vec4(normal, 0.0)));
-    T = normalize(T -dot(T,N) * N);
-    vec3 B = cross(T, N);
+    T = normalize(T - dot(T,N) * N);
+    vec3 B = cross(N, T);
     //to frag
     //i dont get it need to inverse or not
     TBNview = transpose(inverse(mat3(view * model))) * mat3(T, B, N);
@@ -43,5 +43,5 @@ void main()
     //Passive
     outCoords = st;
     outFrame = frame;
-    texindex = texindex;
+    texindex = texIndex;
 }

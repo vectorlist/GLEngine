@@ -23,7 +23,7 @@
 #define DIR_HEIGHTMAP			"../data/texture/"
 #define DIR_MODEL				"../data/model/"
 
-#define FILE_DEFAULT_DIFFUSE	DIR_TEXTURE"terrain_test.jpg"
+#define FILE_DEFAULT_DIFFUSE	DIR_TEXTURE"desert_diffuse.jpg"
 
 //math
 #define NORMALIZE_HEIGHT		1.f/255.f;

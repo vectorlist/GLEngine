@@ -71,11 +71,25 @@ const std::vector<float> st2 = {
 	50.0, 0.0
 };
 
+const std::vector<float> st3 = {
+	10.0, 10.0,
+	0.0, 10.0,
+	0.0, 0.0,
+	10.0, 0.0
+};
+
 
 const std::vector<uint32_t>i2 =
 {
 	0,1,2,
 	2,3,0
+};
+
+const std::vector<float> t1 = {
+	0, 1, 0.0f,
+	0, 1, 0.0f,
+	0,  1, 0.f,
+	0,  1, 0
 };
 
 void setConsoleOutput(int x, int y, int w, int h)
@@ -90,32 +104,50 @@ void setConsoleOutput(int x, int y, int w, int h)
 
 void setRenderSetting(Renderer &renderer)
 {
-	model_ptr model2 = model_ptr(new Model);
-
-	model2->loadModel(DIR_MODEL"plane.obj");
-	model2->meshs[0]->map.normal = Mesh::load(DIR_TEXTURE"ground_normal.jpg", false, TEXTURE_NORMAL);
-	renderer.addElement(model2);
-	//Model
 	/*model_ptr model1 = model_ptr(new Model);
-	mesh_ptr mesh1 = mesh_ptr(new Mesh);
-	mesh1->vertices = v1;
-	mesh1->normals = n1;
-	mesh1->st = st1;
-	mesh1->indices = i1;
-	mesh1->buildBuffer();
-	mesh1->map.diffuse = Mesh::load(DIR_TEXTURE"checker.jpg");
-
 	mesh_ptr mesh2 = mesh_ptr(new Mesh);
 	mesh2->vertices = v2;
 	mesh2->normals = n2;
-	mesh2->st = st2;
+	mesh2->st = st3;
 	mesh2->indices = i2;
+	mesh2->tangent = t1;
 	mesh2->buildBuffer();
-	mesh2->map.diffuse = Mesh::load(DIR_TEXTURE"ground_normal.jpg", false);
-	model1->meshs.push_back(mesh1);
+	mesh2->map.diffuse = Mesh::load(DIR_TEXTURE"ground_diffuse.jpg", false);
+	mesh2->map.normal = Mesh::load(DIR_TEXTURE"ground_normal.jpg", false, TEXTURE_NORMAL);
 	model1->meshs.push_back(mesh2);
 	
 	renderer.addElement(model1);*/
+	model_ptr model2 = model_ptr(new Model);
+
+	model2->loadModel(DIR_MODEL"plane.obj");
+	model2->meshs[0]->setTexture(DIR_TEXTURE"crack_normal.jpg", false, TEXTURE_NORMAL);
+	renderer.addElement(model2);
+
+	////Model
+	//model_ptr model1 = model_ptr(new Model);
+	//mesh_ptr mesh1 = mesh_ptr(new Mesh);
+	//mesh1->vertices = v1;
+	//mesh1->normals = n1;
+	//mesh1->st = st1;
+	//mesh1->indices = i1;
+	//mesh1->tangent = t1;
+	//mesh1->buildBuffer();
+	//mesh1->map.diffuse = Mesh::load(DIR_TEXTURE"checker.jpg");
+	//mesh1->map.normal = Mesh::load(DIR_TEXTURE"normal.jpg", false, TEXTURE_NORMAL);
+
+	//mesh_ptr mesh2 = mesh_ptr(new Mesh);
+	//mesh2->vertices = v2;
+	//mesh2->normals = n2;
+	//mesh2->st = st2;
+	//mesh2->indices = i2;
+	//mesh2->tangent = t1;
+	//mesh2->buildBuffer();
+	//mesh2->map.diffuse = Mesh::load(DIR_TEXTURE"ground_normal.jpg", false);
+	//mesh2->map.normal = Mesh::load(DIR_TEXTURE"normal.jpg", false, TEXTURE_NORMAL);
+	//model1->meshs.push_back(mesh1);
+	//model1->meshs.push_back(mesh2);
+	//
+	//renderer.addElement(model1);
 
 	////---------- ASSIMP -------------
 	//model_ptr model2 = model_ptr(new Model);

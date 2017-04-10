@@ -30,11 +30,11 @@ vec3 testShading(vec3 light, vec3 normal)
     
     //view dot reflect
     float vr = dot(viewDir, ref);
-    float shine = 100;
+    float shine = 1000;
     float p = pow(max(vr,0.0), shine);
     //vec3 spec = p * vec3(1);
     
-    return vec3(1,1,1) * d;
+    return  d * vec3(texture(diffuse_map, outCoords));
 }
 
 void main()
@@ -43,17 +43,21 @@ void main()
     vec3 lightPos = vec3(3,2+f,3);
     vec3 outColor = inColor;
     vec3 normal = texture(normal_map, outCoords).rgb;
-    vec3 base = texture(diffuse_map, outCoords).rgb;
+    vec3 base = 0.05 * texture(diffuse_map, outCoords).rgb;
     //tangent normal
     vec3 tbn = normalize(TBNview *(normal * 2.0 - vec3(1.0)));
     
     //base *= testShading(lightPos, tbn);
     vec3 result;
-    if(texindex > 0){
-	result = normal;
+    if(texindex < 0){
+	result = texture(diffuse_map, outCoords).rgb;
     }
-    else{
-	result = base * testShading(lightPos, outNormal);
+    else if(texindex < 0.9){
+	base += testShading(lightPos, tbn);
+	result = base;
+    }
+    else if(texindex < 1.9 && texindex > 0.9){
+	result = texture(normal_map, outCoords).rgb * testShading(lightPos, outNormal);
     }
     
     fragColor = vec4(result,1);

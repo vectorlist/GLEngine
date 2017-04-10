@@ -21,6 +21,7 @@ std::string Shader::codeFromFile(const std::string &filename)
 	}
 	filestream.close();
 	return bits;
+	
 }
 
 GLuint Shader::compile(const GLchar *code, const GLenum type, const char* path)
