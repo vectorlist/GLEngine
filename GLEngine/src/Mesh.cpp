@@ -68,7 +68,41 @@ void Mesh::releaseBuffer()
 }
 
 
-Texture* Mesh::load(const std::string & filename, bool clamp)
+void Mesh::setTexture(const std::string & filename, bool clamp, Texture_Type type)
+{
+	//initialize when local
+	Texture* texture = NULL;
+	bool found = false;
+	for (int i = 0; i < global_textures.size(); ++i)
+	{
+		//if path is not in already loaded textures
+		if (!filename.compare(Mesh::global_textures[i]->path))
+		{
+			texture = Mesh::global_textures[i];
+			found = true;
+		}
+	}
+	//path is not in global texture
+	if (!found) {
+		texture = Mesh::load(filename, clamp, type);
+	}
+	
+	//set texture to this mesh
+	switch (type)
+	{
+	case TEXTURE_DIFFUSE:
+		map.diffuse = texture;
+		break;
+	case TEXTURE_SPECULAR:
+		map.specualr = texture;
+		break;
+	case TEXTURE_NORMAL:
+		map.normal = texture;
+		break;
+	}
+}
+
+Texture* Mesh::load(const std::string & filename, bool clamp, Texture_Type type)
 {
 	SDL_Surface* image = IMG_Load(filename.c_str());
 	SDL_Texture* t = IMG_LoadTexture(NULL, filename.c_str());
@@ -80,7 +114,7 @@ Texture* Mesh::load(const std::string & filename, bool clamp)
 
 	LOG << "loaded texture" << ENDL;
 	Texture* texture = new Texture();
-	texture->type = DIFFUSE;
+	texture->type = type;
 	texture->path = filename;
 
 	glGenTextures(1, &texture->id);				//id itself

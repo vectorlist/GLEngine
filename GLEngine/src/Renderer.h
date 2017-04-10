@@ -29,6 +29,8 @@ public:
 	/*Render_Mode mode;*/
 	void addElement(model_ptr &models);
 	void addElement(geometry_ptr &geo);
+
+	void setRenderMode(Render_Mode m);
 private:
 	//redner mode
 	void render_forward();
@@ -53,4 +55,8 @@ inline void Renderer::addElement(geometry_ptr &geo)
 	geometry.push_back(geo);
 }
 
+inline void Renderer::setRenderMode(Render_Mode m)
+{
+	mode = m;
+}
 

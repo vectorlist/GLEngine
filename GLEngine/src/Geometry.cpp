@@ -11,55 +11,6 @@ Geometry::~Geometry()
 {
 }
 
-
-//void Geometry::loadHeightMap(const std::string &filename, int scale)
-//{
-//	SDL_Surface* map = IMG_Load(filename.c_str());
-//	if (!map) {
-//		std::string err = "failed to load height map : ";
-//		err.append(filename);
-//		LOG_ERROR(err);
-//	}
-//
-//	/*auto p = getHeightPixelPointer(, 0, map);*/
-//	//float n = NORMALIZE_HEIGHT;
-//	//calculateNormal(10, 10, map, n, 0.3);
-//
-//	uint32_t scale_size = scale;
-//	x_size = map->w;
-//	z_size = map->h;
-//	LOG << "height map size : " << x_size << " : " << z_size << ENDL;
-//	int totalScaled = 0;
-//	//per scaled size
-//	if (scale >= x_size) {
-//		overScale = true;
-//		LOG << "over scale" << ENDL;
-//	}
-//
-//	for (int geo_z = 0; geo_z < map->h; geo_z += scale_size){
-//		for (int geo_x = 0; geo_x < map->w; geo_x += scale_size){
-//
-//			//if (geo_z >= x_size - (scale) || geo_x >= z_size -(scale)) continue;
-//			/*mesh_ptr m = mesh_ptr(new Mesh());*/
-//			Mesh* mesh = new Mesh;
-//			mesh->indice_size = 3 * 2 * ((scale_size - 1 + 1) * (scale_size - 1 + 1));
-//			mesh->vertices_size = (scale_size + 1) * (scale_size + 1);
-//
-//			
-//			LOG << " z : " << geo_z << ENDL;
-//			LOG <<  " x : " << geo_x << ENDL;
-//
-//			buildScaledMesh(geo_z, geo_x, scale_size, mesh, map);
-//
-//			mesh->buildBuffer();
-//
-//			totalScaled++;
-//		}
-//	}
-//
-//	/*LOG << "total scale tailed : " <<  totalScaled << ENDL;*/
-//}
-
 void Geometry::loadTerrain(const std::string & filename,
 	float planeScale, float heightScale, unsigned int scalesize)
 {
@@ -84,24 +35,20 @@ void Geometry::loadTerrain(const std::string & filename,
 			for (int z = z_total; z < z_total + scale_size + 1; z++) {
 				for (int x = x_total; x < x_total + scale_size + 1; x++) {
 					// uint8 / 255
-					float y = getHeightPixel(x, z, map) * (heightScale / 255.f);
+					float y = getHeightPixel(x, z, map) * (1.f / 255.f);
 
 					//TODO : scale per vertex issue
-					/*float f_x = x * planeScale / (float)x_total;
-					float f_z = z * planeScale / (float)z_total;*/
-
 					m->vertices.push_back(x);
 					m->vertices.push_back(y);
 					m->vertices.push_back(z);
 
-					vec3f normal = calculateNormal(x, z, map, planeScale, heightScale);
+					vec3f normal = getNormal(x, z, map, planeScale, heightScale);
 					m->normals.push_back(normal.x);
 					m->normals.push_back(normal.y);
 					m->normals.push_back(normal.z);
 
 					m->st.push_back(x);
 					m->st.push_back(z);
-
 
 				}
 			}
@@ -131,12 +78,19 @@ void Geometry::loadTerrain(const std::string & filename,
 					//LOG << "indices : " << i0 << " " << i1 << ENDL;
 				}
 			}
-			m->map.diffuse = Mesh::load(DIR_TEXTURE"terrain_test.jpg", false);
+			m->map.diffuse = Mesh::load(DIR_TEXTURE"terrain_test.jpg",false);
 			
 			m->buildBuffer();
 			meshs.push_back(m);
 		}
 	}
+	//setting all matrix and translate widh scale and height
+	//move to center
+	float center_x = (map->w * planeScale / 2);
+	float center_z = (map->h * planeScale / 2); 
+	matrix_trans.translate(vec3f(-center_x, 0, -center_z));
+	matrix_scale.scale(vec3f(planeScale, heightScale, planeScale));					
+	matrix = matrix_trans * matrix_scale;
 }
 
 
@@ -160,7 +114,7 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 			mesh->vertices.push_back(z);
 
 			//Normal
-			vec3f normal = calculateNormal(x, z, map, geo_scale, 1.f);
+			vec3f normal = getNormal(x, z, map, geo_scale, 1.f);
 			mesh->normals.push_back(normal.x);
 			mesh->normals.push_back(normal.y);
 			mesh->normals.push_back(normal.z);
@@ -184,7 +138,7 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 	{
 		for (int x = 0; x < scale - 1 + 1; ++x)
 		{
-			int i[5];								//quad indices
+			int i[6];								//quad indices
 													//tri1
 			i[0] = x + z			 *	(scale + 1);
 			i[1] = (x + 1) + (z + 1) *	(scale + 1);
@@ -213,7 +167,7 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 	LOG << "finish scaled mesh" << ENDL;
 }
 
-	float Geometry::getHeightPixel(int x, int z, SDL_Surface * surface)
+float Geometry::getHeightPixel(int x, int z, SDL_Surface * surface)
 {
 	uint32_t format = surface->format->BytesPerPixel;
 	//LOG << "byte " << format << ENDL;
@@ -245,11 +199,11 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 	}
 }
 
-	vec3f Geometry::calculateNormal(int x, int z, SDL_Surface *map, float p, float h)
+vec3f Geometry::getNormal(int x, int z, SDL_Surface *map, float p, float h)
 {
 	vec3f normal;
-	if ((x < map->w - 1 && x > 0) &&
-		(z < map->h - 1 && z > 0))
+	if (x < map->w - 1 && x > 0 &&
+		z < map->h - 1 && z > 0)
 	{
 		
 		vec3f p1(x * p,		getHeightPixel(x, z, map) *		h, z *p);
@@ -266,7 +220,7 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 		vec3f normal1 = vec3f::cross(edge1, edge2).normalized();
 		//if negative flip , not sure
 		if (normal1.y < 0) {
-			normal1.y *= -1.f;
+			normal1 *= -1.f;
 		}
 
 		//Next
@@ -275,7 +229,7 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 
 		vec3f normal2 = vec3f::cross(edge1, edge2).normalized();
 		if (normal2.y < 0) {
-			normal2.y *= -1.f;
+			normal2 *= -1.f;
 		}
 
 		//Next 
@@ -284,7 +238,7 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 
 		vec3f normal3 = vec3f::cross(edge1, edge2).normalized();
 		if (normal3.y < 0) {
-			normal3.y *= -1.f;
+			normal3 *= -1.f;
 		}
 
 		//Next
@@ -293,18 +247,11 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 
 		vec3f normal4 = vec3f::cross(edge1, edge2).normalized();
 		if (normal4.y < 0) {
-			normal4.y *= -1.f;
+			normal4 *= -1.f;
 		}
 
 		//normalize all normal
 		normal = (normal1 + normal2 + normal3 + normal4).normalized();
-
-
-		/*LOG << " 0 : " << p1 << ENDL;
-		LOG << " 1 : " << p2 << ENDL;
-		LOG << " 2 : " << p3 << ENDL;
-
-		LOG << "normal : " << normal << ENDL;*/
 	}
 	else {
 		return vec3f(0, 1, 0);		//return just upvector
@@ -312,7 +259,7 @@ void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SD
 }
 
 
-void Geometry::buildFlatTerrain()
+void Geometry::loadFlatTerrain()
 {
 	//mesh->
 	std::vector<float> v2 = {

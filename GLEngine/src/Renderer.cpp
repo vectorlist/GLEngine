@@ -4,7 +4,7 @@
 #include <Geometry.h>
 
 Renderer::Renderer()
-	: mode(MODE_FORWARD)
+	: mode(RENDER_FORWARD)
 {
 
 }
@@ -26,15 +26,15 @@ void Renderer::render()
 {
 	switch (mode)
 	{
-	case MODE_FORWARD:
+	case RENDER_FORWARD:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		render_forward();
 		break;
-	case MODE_TERRAIN:
+	case RENDER_TERRIAN:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		render_terrian();
 		break;
-	case MODE_FLAT:
+	case RENDER_FLAT:
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		render_flat();
 		break;
@@ -58,7 +58,7 @@ void Renderer::updateUniforms()
 	Matrix4x4 proj = vml::perspective(45.f, aspect_ratio, 0.001f, 1000.f);
 	Matrix4x4 view;
 	//view.translate(vec3f(0, 0, -1));
-	view = vml::lookAt(vec3f(0.2, 3, 7), vec3f(0, 0, 0), vec3f(0, 1, 0));
+	view = vml::lookAt(vec3f(0.2, 5, 10), vec3f(0, 1, 0), vec3f(0, 1, 0));
 	for (auto program : shaders)
 	{
 		glUseProgram(program);
@@ -84,6 +84,7 @@ void Renderer::render_forward()
 		Matrix4x4 world;
 		Shader::setUniformMatrix4f(shader_defualt, world, "model", true);
 		//ATTRIB
+		Shader::setUniform1f(shader_defualt, model->texswitch, "texIndex");
 
 		int id = 0;
 		for (auto &mesh : model->meshs)
@@ -96,12 +97,17 @@ void Renderer::render_forward()
 				Shader::setUniform1i(shader_defualt, frame+100, "frame");
 			}
 
-			//Texture Map
+			//Diffuse
 			glActiveTexture(GL_TEXTURE0);
 			GLuint diffuse_id = glGetUniformLocation(shader_defualt, "diffuse_map");
 			glUniform1i(diffuse_id, 0);
-			
 			glBindTexture(GL_TEXTURE_2D, mesh->map.diffuse->id);
+
+			//Normal
+			glActiveTexture(GL_TEXTURE1);
+			GLuint normal_id = glGetUniformLocation(shader_defualt, "normal_map");
+			glUniform1i(normal_id, 1);
+			glBindTexture(GL_TEXTURE_2D, mesh->map.normal->id);
 			//VAO
 			glBindVertexArray(mesh->vao);
 			//glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -132,12 +138,15 @@ void Renderer::render_terrian()
 	for (auto &geo : geometry)
 	{
 		//SAHDER & MATRIX
-		Matrix4x4 world;
-		//world.translate(vec3f(-50, 0, -100));
-		Shader::setUniformMatrix4f(shader_terrain, world, "model", true);
-		//ATTRIB
-		
+		Shader::setUniformMatrix4f(shader_terrain, geo->matrix, "model", true);
 
+		/*Matrix4x4 mat;
+		mat.translate(vec3f(-geo->x_size * 400 /2.f, 0, - geo->z_size * 400 / 2.f));
+		Matrix4x4 scale;
+		scale.scale(vec3f());
+		Matrix4x4 world = mat * scale;
+		Shader::setUniformMatrix4f(shader_terrain, world, "model", true);*/
+		//ATTRIB
 		int id = 0;
 		for (auto &mesh : geo->meshs)
 		{

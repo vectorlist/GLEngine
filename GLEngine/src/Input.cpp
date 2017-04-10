@@ -1,5 +1,5 @@
 #include "Input.h"
-
+#include <Model.h>
 void Input::event(Renderer & renderer, SDL_Window * window)
 {
 	//main SDL event
@@ -24,17 +24,29 @@ void Input::keyPressEvent(Renderer &renderer, SDL_Event &e)
 	{
 	case SDLK_1 :
 		LOG << "Forward Mode" << ENDL;
-		renderer.mode = MODE_FORWARD;
+		renderer.mode = RENDER_FORWARD;
 		break;
 
 	case SDLK_2:
 		LOG << "Terrain Mode" << ENDL;
-		renderer.mode = MODE_TERRAIN;
+		renderer.mode = RENDER_TERRIAN;
 		break;
 
 	case SDLK_3:
 		LOG << "Flat Mode" << ENDL;
-		renderer.mode = MODE_FLAT;
+		renderer.mode = RENDER_FLAT;
 		break;
+
+	case SDLK_t:
+		LOG << "switch texture" << ENDL;
+		for (auto m : renderer.models) {
+			if (m->texswitch < 0.f)
+				m->texswitch = 1.f;
+			else
+				m->texswitch = -1.f;
+			LOG << m->texswitch << ENDL;;
+		}
 	}
+	
+
 }

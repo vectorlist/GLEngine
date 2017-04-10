@@ -60,6 +60,9 @@
     <ClCompile Include="src\Geometry.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Loader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\core\vec2f.h">
@@ -102,6 +105,9 @@
       <Filter>src\Map</Filter>
     </ClInclude>
     <ClInclude Include="src\Geometry.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Loader.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

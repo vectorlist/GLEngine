@@ -11,12 +11,14 @@ uniform mat4 view;
 uniform mat4 model;
 
 out vec2 outUV;
+out vec3 fragColor;
 uniform int frame;
 
 void main()
 {
-    float f = sin(frame * 0.03) * 3.3;
-    vec3 tran = position + vec3(0,0,f);
+    float f = sin(frame * 0.005) * 3.3;
+    vec3 newPos = position + vec3(0,0,f);
     outUV = st;
-    gl_Position = proj * view * model * vec4(tran, 1.0);
+    fragColor = normal;
+    gl_Position = proj * view * model * vec4(newPos, 1.0);
 }

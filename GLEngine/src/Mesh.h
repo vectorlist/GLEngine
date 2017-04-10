@@ -1,8 +1,8 @@
 #pragma once
 
 #include <config.h>
-#include <Texture.h>
 #include <SDL2/SDL_image.h>
+#include <Texture.h>
 struct Vertex
 {
 	vec3f pos;
@@ -38,7 +38,9 @@ public:
 
 	GLuint vao;
 
+	//idk why initialize error
 	Maps map;
+	
 	GLuint vbos[VBO_NUM];
 	GLuint ibo;
 	//properties
@@ -49,12 +51,26 @@ public:
 	void buildBuffer();
 
 	bool has_ibo = true;
+	
+	//set texture this mesh(avoid same texture)
+	void setTexture(
+		const std::string &filename,
+		bool clamp,
+		Texture_Type type);
 
-	static Texture* load(const std::string &filename, bool clamp = true);
+	//static to load texture evrywhere
+	static Texture* load(
+		const std::string &filename,
+		bool clamp = true,
+		Texture_Type type = TEXTURE_DIFFUSE);
+
+	//golobal loaded textures
+	static std::vector<Texture*> global_textures;
 private:
 	void releaseBuffer();
 
 public:
-	static std::vector<Texture*> global_textures;
+	//STATICS
+
 };
 

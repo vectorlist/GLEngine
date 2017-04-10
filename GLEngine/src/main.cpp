@@ -90,9 +90,13 @@ void setConsoleOutput(int x, int y, int w, int h)
 
 void setRenderSetting(Renderer &renderer)
 {
+	model_ptr model2 = model_ptr(new Model);
 
+	model2->loadModel(DIR_MODEL"plane.obj");
+	model2->meshs[0]->map.normal = Mesh::load(DIR_TEXTURE"ground_normal.jpg", false, TEXTURE_NORMAL);
+	renderer.addElement(model2);
 	//Model
-	model_ptr model1 = model_ptr(new Model);
+	/*model_ptr model1 = model_ptr(new Model);
 	mesh_ptr mesh1 = mesh_ptr(new Mesh);
 	mesh1->vertices = v1;
 	mesh1->normals = n1;
@@ -107,19 +111,27 @@ void setRenderSetting(Renderer &renderer)
 	mesh2->st = st2;
 	mesh2->indices = i2;
 	mesh2->buildBuffer();
-	/*mesh2->map.diffuse = Mesh::load(DIR_TEXTURE"ground_diffuse.jpg",false);*/
 	mesh2->map.diffuse = Mesh::load(DIR_TEXTURE"ground_normal.jpg", false);
 	model1->meshs.push_back(mesh1);
 	model1->meshs.push_back(mesh2);
 	
-	renderer.addElement(model1);
+	renderer.addElement(model1);*/
+
+	////---------- ASSIMP -------------
+	//model_ptr model2 = model_ptr(new Model);
+	//model2->loadModel(DIR_MODEL"sphinx.obj");
 
 	//Geometry (Terrain)
-	geometry_ptr geo1 = geometry_ptr(new Geometry());
-	//geo1->loadHeightMap(DIR_HEIGHTMAP"height_map_small.jpg", 300);     //scaling size
-	//geo1->loadTerrain(DIR_HEIGHTMAP"height_map_ss.jpg",200,30,64);     //scaling size
-	geo1->buildFlatTerrain();
-	renderer.addElement(geo1);
+	//geometry_ptr geo1 = geometry_ptr(new Geometry());
+	//geo1->loadTerrain(DIR_HEIGHTMAP"height_map_ss.jpg",2,10,64);     //scaling size
+	////geo1->loadFlatTerrain();
+	//renderer.addElement(geo1);
+	
+
+	//---------- ASSIMP -------------
+	/*model_ptr model2 = model_ptr(new Model);
+	
+	model2->loadModel(DIR_MODEL"sphinx.obj");*/
 	
 	//Shader
 	renderer.shaders[SHADER_FORWARD] = Shader::load(DIR_SHADER"forward.vert",DIR_SHADER"forward.frag");
@@ -141,15 +153,17 @@ void initTextures(Renderer &renderer)
 			mesh_num++;
 		}
 	}
+	
 }
 
 int main(int args, char* argv[])
 {
 	setConsoleOutput(50, 50, 600, 720);
 
-	Application app("OpenGL Engine",1024,720);
+	Application app("OpenGL Engine",1280,720);
 	Renderer renderer;
 
+	renderer.setRenderMode(RENDER_FORWARD);
 	setRenderSetting(renderer);
 	initTextures(renderer);
 

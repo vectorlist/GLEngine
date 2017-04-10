@@ -35,7 +35,7 @@ GLuint Shader::compile(const GLchar *code, const GLenum type, const char* path)
 
 	if (!success) {
 		glGetShaderInfoLog(shader, 512, NULL, info_log);
-		LOG_ERROR(info_log);
+		LOG_SHADER_ERROR(path,info_log);
 	}
 
 	return shader;

@@ -4,6 +4,7 @@
 uniform sampler2D terrain_diffuse;
 
 in vec2 outUV;
+in vec3 fragColor;
 
 void main()
 {

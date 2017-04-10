@@ -2,18 +2,18 @@
 
 #include <config.h>
 
+#define TEXTURE_NONE UINT_MAX
+
 enum Texture_Type
 {
-	DIFFUSE = 0,
-	SPECULAR,
-	NORMAL
+	TEXTURE_DIFFUSE = 0,
+	TEXTURE_SPECULAR,
+	TEXTURE_NORMAL
 };
-
-#define TEXTURE_NONE UINT_MAX
 
 struct Texture
 {
-	GLuint id = TEXTURE_NONE;
+	GLuint id;
 	Texture_Type type;
 	std::string path;
 

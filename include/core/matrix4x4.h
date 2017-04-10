@@ -236,7 +236,6 @@ namespace vml
 		proj[1][3] = -(top + bottom) / (top - bottom);
 		return proj;
 	}
-
 }
 
 #endif // MATRIX4X4_H
