@@ -20,23 +20,25 @@
 #define DIR_DATA				"../data/"
 #define DIR_SHADER				"../data/shader/"
 #define DIR_TEXTURE				"../data/texture/"
-#define DIR_HEIGHTMAP			"../data/texture/"
+#define DIR_HEIGHT				"../data/texture/height/"
 #define DIR_MODEL				"../data/model/"
 
-#define FILE_DEFAULT_DIFFUSE	DIR_TEXTURE"desert_diffuse.jpg"
+#define FILE_DEFAULT_DIFFUSE	DIR_TEXTURE"default_diffuse.jpg"
 
 //math
 #define NORMALIZE_HEIGHT		1.f/255.f;
 
 //forwar declare
-class Mesh;
+
 class Model;
 class Geometry;
 class Texture;
+class Camera;
 //TODO : replace unique ptr
-typedef std::shared_ptr<Mesh> mesh_ptr;
+
 typedef std::shared_ptr<Model> model_ptr;
 typedef std::shared_ptr<Geometry> geometry_ptr;
+typedef std::shared_ptr<Camera> camera_ptr;
 
 
 

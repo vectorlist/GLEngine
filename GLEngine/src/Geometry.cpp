@@ -1,6 +1,6 @@
 #include "Geometry.h"
 #include <SDL2/SDL_image.h>
-#include <Mesh.h>
+
 #include <Texture.h>
 Geometry::Geometry()
 {
@@ -12,7 +12,7 @@ Geometry::~Geometry()
 }
 
 void Geometry::loadTerrain(const std::string & filename,
-	float planeScale, float heightScale, unsigned int scalesize)
+	float planeScale, float heightScale, unsigned int scalesize, float mapping_scale)
 {
 	SDL_Surface* map = IMG_Load(filename.c_str());
 	if (!map) {
@@ -27,29 +27,30 @@ void Geometry::loadTerrain(const std::string & filename,
 
 	for (int z_total = 0; z_total < map->h; z_total += scale_size) {
 		for (int x_total = 0; x_total < map->w; x_total += scale_size) {
-			Mesh* m = new Mesh;
-
-			m->indice_size = 3 * 2 * ((scale_size - 1 + 1) * (scale_size - 1 + 1));
-			m->vertices_size = (scale_size + 1) * (scale_size + 1);
-
+			//Mesh* m = new Mesh;
+			std::vector<Vertex> vertices;
+			std::vector<GLuint> indices;
 			for (int z = z_total; z < z_total + scale_size + 1; z++) {
 				for (int x = x_total; x < x_total + scale_size + 1; x++) {
 					// uint8 / 255
-					float y = getHeightPixel(x, z, map) * (1.f / 255.f);
+					float y = getHeightPixel(x, z, map) * NORMALIZE_HEIGHT;
 
-					//TODO : scale per vertex issue
-					m->vertices.push_back(x);
-					m->vertices.push_back(y);
-					m->vertices.push_back(z);
+					Vertex vertex;
+					vec3f vector;
+					//pos
+					vector.x = x;
+					vector.y = y;
+					vector.z = z;
+					vertex.pos = vector;
 
 					vec3f normal = getNormal(x, z, map, planeScale, heightScale);
-					m->normals.push_back(normal.x);
-					m->normals.push_back(normal.y);
-					m->normals.push_back(normal.z);
+					vertex.normal = normal;
 
-					m->st.push_back(x);
-					m->st.push_back(z);
+					vertex.st = vec2f(x * mapping_scale, z * mapping_scale);
+					vertex.tangent = vec3f(0.f);
+					vertex.bitangent = vec3f(0.0f);
 
+					vertices.push_back(vertex);
 				}
 			}
 
@@ -68,22 +69,22 @@ void Geometry::loadTerrain(const std::string & filename,
 					i[4] = x + (z + 1) *		(scale_size + 1);
 					i[5] = (x + 1) + (z + 1) *	(scale_size + 1);
 
-					m->indices.push_back(i[0]);
-					m->indices.push_back(i[1]);
-					m->indices.push_back(i[2]);
+					indices.push_back(i[0]);
+					indices.push_back(i[1]);
+					indices.push_back(i[2]);
 
-					m->indices.push_back(i[3]);
-					m->indices.push_back(i[4]);
-					m->indices.push_back(i[5]);
-					//LOG << "indices : " << i0 << " " << i1 << ENDL;
+					indices.push_back(i[3]);
+					indices.push_back(i[4]);
+					indices.push_back(i[5]);
 				}
 			}
-			m->map.diffuse = Mesh::load(DIR_TEXTURE"terrain_test.jpg",false);
+			//m->map.diffuse = Mesh::load(DIR_TEXTURE"terrain_test.jpg",false);
 			
-			m->buildBuffer();
-			meshs.push_back(m);
+			//m->buildBuffer();
+			meshes.push_back(Mesh(vertices, indices));
 		}
 	}
+
 	//setting all matrix and translate widh scale and height
 	//move to center
 	float center_x = (map->w * planeScale / 2);
@@ -96,69 +97,69 @@ void Geometry::loadTerrain(const std::string & filename,
 
 void Geometry::buildScaledMesh(int geoZ, int geoX, int perScale, Mesh * mesh, SDL_Surface * map)
 {
-	int sumZ = geoZ + perScale + 1;
-	int sumX = geoX + perScale + 1;
+	//int sumZ = geoZ + perScale + 1;
+	//int sumX = geoX + perScale + 1;
 
-	//Build Vertex Propertis
-	if (overScale) {
-		sumZ = z_size;
-		sumX = x_size;
-	}
-	for (int z = geoZ; z < sumZ; z++) {
-		for (int x = geoX; x < sumX; x++){
-			float y = getHeightPixel(x, z, map) * NORMALIZE_HEIGHT;
-			LOG << z << ENDL;
-			//Vertex
-			mesh->vertices.push_back(x);
-			mesh->vertices.push_back(y);
-			mesh->vertices.push_back(z);
+	////Build Vertex Propertis
+	//if (overScale) {
+	//	sumZ = z_size;
+	//	sumX = x_size;
+	//}
+	//for (int z = geoZ; z < sumZ; z++) {
+	//	for (int x = geoX; x < sumX; x++){
+	//		float y = getHeightPixel(x, z, map) * NORMALIZE_HEIGHT;
+	//		LOG << z << ENDL;
+	//		//Vertex
+	//		mesh->vertices.push_back(x);
+	//		mesh->vertices.push_back(y);
+	//		mesh->vertices.push_back(z);
 
-			//Normal
-			vec3f normal = getNormal(x, z, map, geo_scale, 1.f);
-			mesh->normals.push_back(normal.x);
-			mesh->normals.push_back(normal.y);
-			mesh->normals.push_back(normal.z);
-			//LOG << "height : " << p << ENDL;
+	//		//Normal
+	//		vec3f normal = getNormal(x, z, map, geo_scale, 1.f);
+	//		mesh->normals.push_back(normal.x);
+	//		mesh->normals.push_back(normal.y);
+	//		mesh->normals.push_back(normal.z);
+	//		//LOG << "height : " << p << ENDL;
 
-			//ST
-			mesh->st.push_back(x);
-			mesh->st.push_back(z);
+	//		//ST
+	//		mesh->st.push_back(x);
+	//		mesh->st.push_back(z);
 
-			//TANGENT  later
-		}
-	}
-	int scale = perScale;
-	if (overScale)
-	{
-		scale = geoZ;
-	}
+	//		//TANGENT  later
+	//	}
+	//}
+	//int scale = perScale;
+	//if (overScale)
+	//{
+	//	scale = geoZ;
+	//}
 
-	//Build Indices
-	for (int z = 0; z < scale - 1 + 1; ++z)
-	{
-		for (int x = 0; x < scale - 1 + 1; ++x)
-		{
-			int i[6];								//quad indices
-													//tri1
-			i[0] = x + z			 *	(scale + 1);
-			i[1] = (x + 1) + (z + 1) *	(scale + 1);
-			i[2] = (x + 1) + z *		(scale + 1);
+	////Build Indices
+	//for (int z = 0; z < scale - 1 + 1; ++z)
+	//{
+	//	for (int x = 0; x < scale - 1 + 1; ++x)
+	//	{
+	//		int i[6];								//quad indices
+	//												//tri1
+	//		i[0] = x + z			 *	(scale + 1);
+	//		i[1] = (x + 1) + (z + 1) *	(scale + 1);
+	//		i[2] = (x + 1) + z *		(scale + 1);
 
-			//tri 2
-			i[3] = x + z *				(scale + 1);
-			i[4] = x + (z + 1) *		(scale + 1);
-			i[5] = (x + 1) + (z + 1) *	(scale + 1);
+	//		//tri 2
+	//		i[3] = x + z *				(scale + 1);
+	//		i[4] = x + (z + 1) *		(scale + 1);
+	//		i[5] = (x + 1) + (z + 1) *	(scale + 1);
 
-			mesh->indices.push_back(i[0]);
-			mesh->indices.push_back(i[1]);
-			mesh->indices.push_back(i[2]);
+	//		mesh->indices.push_back(i[0]);
+	//		mesh->indices.push_back(i[1]);
+	//		mesh->indices.push_back(i[2]);
 
-			mesh->indices.push_back(i[3]);
-			mesh->indices.push_back(i[4]);
-			mesh->indices.push_back(i[5]);
-			//LOG << "indices : " << i0 << " " << i1 << ENDL;
-		}
-	}
+	//		mesh->indices.push_back(i[3]);
+	//		mesh->indices.push_back(i[4]);
+	//		mesh->indices.push_back(i[5]);
+	//		//LOG << "indices : " << i0 << " " << i1 << ENDL;
+	//	}
+	//}
 
 	//mesh->map.diffuse = Mesh::load(DIR_TEXTURE"terrain_test.jpg", false);
 
@@ -259,56 +260,61 @@ vec3f Geometry::getNormal(int x, int z, SDL_Surface *map, float p, float h)
 }
 
 
-void Geometry::loadFlatTerrain()
+void Geometry::loadFlatTerrain(float x, float z, float mapping_scale)
 {
-	//mesh->
-	std::vector<float> v2 = {
-		50, 0.0, 50,
-		-50,0, 50,
-		-50,0,-50,
-		50,0,-50
+	float width_x = x/2.f;
+	float width_z = z/2.f;
+	float st_x = width_x / mapping_scale;
+	float st_z = width_z / mapping_scale;
+
+	std::vector<float> v = {
+		 width_x, 0,  width_z,
+		-width_x, 0,  width_z,
+		-width_x, 0, -width_z,
+		 width_x, 0, -width_z
 	};
 
-	std::vector<float> n2 = {
+	std::vector<float> n = {
 		0, 1, 0.0f,
 		0, 1, 0.0f,
 		0,  1, 0.f,
 		0,  1, 0
 	};
 
-	std::vector<float> st2 = {
-		50.0, 50.0,
-		0.0, 50.0,
+	std::vector<float> st = {
+		st_x, st_z,
+		0.0, st_z,
 		0.0, 0.0,
-		50.0, 0.0
+		st_x, 0.0
 	};
 
 
-	std::vector<uint32_t>i2 =
+	std::vector<uint32_t>index =
 	{
 		0,1,2,
 		2,3,0
 	};
-	Mesh* mesh = new Mesh;
-	for (int i = 0; i < v2.size(); ++i)
+
+	std::vector<Vertex> vertice;
+	std::vector<GLuint> indices;
+
+	for (int i = 0, j=0; i < 12; i+=3,j +=2)
 	{
-		mesh->vertices.push_back(v2[i]);
-		mesh->normals.push_back(n2[i]);
+		Vertex vertex;
+		vertex.pos =	vec3f(v[i], v[i + 1], v[i + 2]);
+		vertex.normal = vec3f(n[i], v[i + 1], v[i + 2]);
+		vertex.st = vec2f(st[j], st[j + 1]);
+		vertex.tangent = vec3f(1, 0, 0);
+		vertex.bitangent = vec3f(0, 0, 1);
+		vertice.push_back(vertex);
 	}
 
-	for (int i = 0; i < st2.size(); ++i)
+	for (int i = 0; i < index.size(); ++i)
 	{
-		mesh->st.push_back(st2[i]);
+		indices.push_back(index[i]);
 	}
 
-	for (int i = 0; i < i2.size(); ++i)
-	{
-		mesh->indices.push_back(i2[i]);
-	}
-
-	mesh->map.diffuse = Mesh::load(DIR_TEXTURE"terrain_test.jpg", false);
-	mesh->buildBuffer();
-	meshs.push_back(mesh);
+	meshes.push_back(Mesh(vertice, indices));
 }
 
 

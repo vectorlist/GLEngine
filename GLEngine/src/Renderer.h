@@ -2,6 +2,7 @@
 
 #include <config.h>
 #include <vector>
+#include <Mesh.h>
 
 class Renderer
 {
@@ -17,13 +18,17 @@ public:
 	void render();
 	void resize(uint32_t width, uint32_t height);
 	//------------ Uniforms -----------------
-	void updateUniforms();
+	void init_uniforms();
+	void update_uniform();
 
 
 	Render_Mode mode;
 	
 	std::vector<model_ptr> models;
 	std::vector<geometry_ptr> geometry;
+	//Camera
+	std::vector<camera_ptr> cameras;
+	Camera* current_camera();
 	GLuint shaders[SHADER_MAX_NUM];
 
 	/*Render_Mode mode;*/
@@ -58,5 +63,10 @@ inline void Renderer::addElement(geometry_ptr &geo)
 inline void Renderer::setRenderMode(Render_Mode m)
 {
 	mode = m;
+}
+
+inline Camera* Renderer::current_camera()
+{
+	return cameras[0].get();
 }
 

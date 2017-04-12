@@ -8,4 +8,5 @@ namespace Input
 {
 	void event(Renderer &renderer, SDL_Window* window);
 	void keyPressEvent(Renderer &renderer, SDL_Event &e);
+	void mousePressEvent(Renderer &renderer, SDL_Event &e);
 }

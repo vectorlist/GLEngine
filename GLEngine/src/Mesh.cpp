@@ -3,75 +3,60 @@
 //it must be Shader_Type Index
 std::vector<Texture*> Mesh::global_textures;
 
-Mesh::Mesh()
+Mesh::Mesh(std::vector<Vertex> vertice, std::vector<uint32_t> indices)
 {
-
+	this->vertices = vertice;
+	this->indices = indices;
+	build_buffers();
 }
 
 Mesh::~Mesh()
 {
-	releaseBuffer();
+	/*glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ibo);*/
 }
 
-void Mesh::buildBuffer()
+void Mesh::build_buffers()
 {
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
+	// Create buffers/arrays
+	glGenVertexArrays(1, &this->vao);
+	glGenBuffers(1, &this->vbo);
+	glGenBuffers(1, &this->ibo);
 
-	glGenBuffers(1, &ibo);
-	glGenBuffers(4, vbos);
+	glBindVertexArray(this->vao);
 
-	//indices
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]),
-		indices.data(), GL_STATIC_DRAW);
+	// Load data into vertex buffers
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+	glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex),
+		&this->vertices[0], GL_STATIC_DRAW);
 
-	//vertex
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[VBO_VERTEX]);					//index 0 for vertex
-	glBufferData(GL_ARRAY_BUFFER, (vertices.size() * 3) * sizeof(float),
-		vertices.data(), GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ibo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint),
+		&this->indices[0], GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	// Vertex Positions
 	glEnableVertexAttribArray(0);
-
-	//normal
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[VBO_NORAML]);					//index 1 for normal
-	glBufferData(GL_ARRAY_BUFFER, (normals.size() * 3) * sizeof(float),
-		normals.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+		(GLvoid*)0);
+	// Vertex Normals
 	glEnableVertexAttribArray(1);
-
-	//st
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[VBO_ST]);					//index 1 for texture coords
-	glBufferData(GL_ARRAY_BUFFER, (st.size() * 2) * sizeof(float),
-		st.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+		(GLvoid*)offsetof(Vertex, Vertex::normal));
+	// Vertex Texture Coords
 	glEnableVertexAttribArray(2);
-
-	//tangent
-	glBindBuffer(GL_ARRAY_BUFFER, vbos[VBO_TANGENT]);					//index 1 for texture coords
-	glBufferData(GL_ARRAY_BUFFER, (tangent.size() * 3) * sizeof(float),
-		tangent.data(), GL_STATIC_DRAW);
-
-	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid*)0);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+		(GLvoid*)offsetof(Vertex, Vertex::st));
+	// Vertex Tangent
 	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+		(GLvoid*)offsetof(Vertex, Vertex::tangent));
+	// Vertex Bitangent
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+		(GLvoid*)offsetof(Vertex, Vertex::bitangent));
 
-	
-
-	//finish vao bounding
 	glBindVertexArray(0);
-
-}
-
-void Mesh::releaseBuffer()
-{
-	glDeleteVertexArrays(1, &vao);
-	/*if (vbos.size() == 0) return;
-	glDeleteBuffers(vbos.size(), vbos.data());*/
-	glDeleteBuffers(VBO_NUM, vbos);
-	glDeleteBuffers(1, &ibo);
 }
 
 
@@ -91,25 +76,25 @@ void Mesh::setTexture(const std::string & filename, bool clamp, Texture_Type typ
 	}
 	//path is not in global texture
 	if (!found) {
-		texture = Mesh::load(filename, clamp, type);
+		texture = Mesh::loadTexture(filename, clamp, type);
 	}
 	
 	//set texture to this mesh
 	switch (type)
 	{
 	case TEXTURE_DIFFUSE:
-		map.diffuse = texture;
+		maps.diffuse = texture;
 		break;
 	case TEXTURE_SPECULAR:
-		map.specualr = texture;
+		maps.specular = texture;
 		break;
 	case TEXTURE_NORMAL:
-		map.normal = texture;
+		maps.normal = texture;
 		break;
 	}
 }
 
-Texture* Mesh::load(const std::string & filename, bool clamp, Texture_Type type)
+Texture* Mesh::loadTexture(const std::string & filename, bool clamp, Texture_Type type)
 {
 	SDL_Surface* image = IMG_Load(filename.c_str());
 	SDL_Texture* t = IMG_LoadTexture(NULL, filename.c_str());
@@ -118,8 +103,6 @@ Texture* Mesh::load(const std::string & filename, bool clamp, Texture_Type type)
 		err.append(filename);
 		LOG_ERROR(err);
 	}
-
-	LOG << "loaded texture" << ENDL;
 	Texture* texture = new Texture();
 	texture->type = type;
 	texture->path = filename;
@@ -142,7 +125,6 @@ Texture* Mesh::load(const std::string & filename, bool clamp, Texture_Type type)
 
 	if (image->format->BytesPerPixel == 4)
 	{
-		LOG << "RGBA" << ENDL;
 		GLenum format = (image->format->Rmask == 255) ? GL_RGBA : GL_BGRA;
 
 		glTexImage2D(
@@ -156,7 +138,6 @@ Texture* Mesh::load(const std::string & filename, bool clamp, Texture_Type type)
 			(GLvoid*)image->pixels);
 	}
 	else {
-		LOG << "RGB : " << image->format->Rmask << ENDL;
 		GLenum format = (image->format->Rmask == 255) ? GL_RGB : GL_BGR;
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0,
@@ -168,7 +149,15 @@ Texture* Mesh::load(const std::string & filename, bool clamp, Texture_Type type)
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	SDL_FreeSurface(image);
+	SDL_DestroyTexture(t);
 
 	global_textures.push_back(texture);
 	return texture;
+}
+
+void Mesh::render()
+{
+	glBindVertexArray(this->vao);
+	glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }

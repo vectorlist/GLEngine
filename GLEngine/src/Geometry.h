@@ -1,7 +1,7 @@
 #pragma once
 
 #include <config.h>
-//#include <SDL2/SDL.h>
+#include <Mesh.h>
 enum Map_Type
 {
 	RGB8 =1,
@@ -19,10 +19,14 @@ public:
 	Geometry();
 	~Geometry();
 
-	std::vector<Mesh*> meshs;
+	std::vector<Mesh> meshes;
 
 	void loadTerrain(
-		const std::string &filename, float planeScale, float heightScale, unsigned int scale_size);
+		const std::string &filename, 
+		float planeScale,
+		float heightScale,
+		unsigned int scale_size,
+		float mapping_scale = 1.0f);
 
 	void buildScaledMesh(int geoZ, int geoX, int perScale,
 		Mesh* mesh, SDL_Surface* map);
@@ -31,7 +35,7 @@ public:
 
 	vec3f getNormal(int x, int z, SDL_Surface* map, float p, float h);
 	
-	void loadFlatTerrain();
+	void loadFlatTerrain(float x, float z, float mapping_scale = 1.0f);
 	int x_size;
 	int z_size;
 private:

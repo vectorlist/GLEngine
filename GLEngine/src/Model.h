@@ -10,28 +10,19 @@ class Model
 {
 public:
 	Model();
-	~Model();
+	Model(const std::string &filename);
+	~Model() {};
 
-	std::vector<mesh_ptr> meshs;
+	std::vector<Mesh> meshes;
 
-	void addElement(mesh_ptr mesh);
-	
-	//Assimp
-	void loadModel(const std::string &filename);
-	//test without tangent
-	void loadModel(const std::string &filename, bool usetiny);
-	void extractNode(aiNode* node, const aiScene* scene);
+	void loadModel(const std::string &path);
+private:
+	void processNode(aiNode* node, const aiScene* scene);
+	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 
-	std::string dir;
-
-	mesh_ptr convertMesh(aiMesh* aMesh,const aiScene* scene);
-	float texswitch = -1.0f;
+	std::string directory;
 };
 
-inline void Model::addElement(mesh_ptr mesh)
-{
-	meshs.push_back(mesh);
-}
 
 
 

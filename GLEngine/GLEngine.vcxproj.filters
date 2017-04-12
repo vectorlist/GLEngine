@@ -60,7 +60,7 @@
     <ClCompile Include="src\Geometry.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\Loader.cpp">
+    <ClCompile Include="src\Camera.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -107,7 +107,10 @@
     <ClInclude Include="src\Geometry.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Loader.h">
+    <ClInclude Include="src\Initilizer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

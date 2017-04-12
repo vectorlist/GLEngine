@@ -1,5 +1,7 @@
 #include "Input.h"
 #include <Model.h>
+#include <Camera.h>
+
 void Input::event(Renderer & renderer, SDL_Window * window)
 {
 	//main SDL event
@@ -10,10 +12,13 @@ void Input::event(Renderer & renderer, SDL_Window * window)
 		{
 			renderer.isRunninig = false;
 		}
-		else if (e.type == SDL_KEYDOWN)
+		if (e.type == SDL_KEYDOWN)
 		{
 			//LOG << "key event" << ENDL;
 			keyPressEvent(renderer, e);
+		}
+		if (e.type = SDL_MOUSEBUTTONDOWN) {
+			mousePressEvent(renderer, e);
 		}
 	}
 }
@@ -37,16 +42,33 @@ void Input::keyPressEvent(Renderer &renderer, SDL_Event &e)
 		renderer.mode = RENDER_FLAT;
 		break;
 
-	case SDLK_t:
-		LOG << "switch texture" << ENDL;
-		for (auto m : renderer.models) {
-			if (m->texswitch < 3.f)
-				m->texswitch += 1.f;
-			else
-				m->texswitch = -1.f;
-			LOG << m->texswitch << ENDL;;
-		}
-	}
-	
+	case SDLK_ESCAPE:
+		LOG << "Quit..." << ENDL;
+		renderer.isRunninig = false;
+		break;
 
+	case SDLK_w:
+		renderer.current_camera()->process_keyboard(FORWARD, 3.f);
+		break;
+
+	case SDLK_s:
+		renderer.current_camera()->process_keyboard(BACKWARD, 3.f);
+		break;
+
+	case SDLK_d:
+		renderer.current_camera()->process_keyboard(RIGHT, 3.f);
+		break;
+	case SDLK_a:
+		renderer.current_camera()->process_keyboard(LEFT, 3.f);
+		break;
+	}
+}
+
+void Input::mousePressEvent(Renderer &renderer, SDL_Event &e)
+{
+	int x, y;
+	uint32_t mouse = SDL_GetRelativeMouseState(&x, &y);
+	if(mouse)
+		LOG << e.motion.x << ENDL;
+	
 }

@@ -60,5 +60,5 @@ void main()
 	result = texture(normal_map, outCoords).rgb * testShading(lightPos, outNormal);
     }
     
-    fragColor = vec4(result,1);
+    fragColor = vec4(vec3(1,0,0),1);
 }
