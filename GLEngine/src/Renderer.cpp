@@ -1,11 +1,12 @@
 #include "Renderer.h"
 #include <Model.h>
 #include <Shader.h>
-#include <Geometry.h>
-#include <Camera.h>
+#include <camera.h>
+#include <text.h>
+#include <terrain.h>
 
 Renderer::Renderer()
-	: mode(RENDER_FORWARD)
+	: AbstractRenderer()
 {
 
 }
@@ -19,13 +20,19 @@ Renderer::~Renderer()
 void Renderer::initialize()
 {
 	glClearColor(0, 1, 1, 1);
-	/*glEnable(GL_DEPTH_TEST);*/
-
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
+	auto text = text_ptr(new Text(FILE_TEXT_SEGOEUI, 16));
+	*this << text;
 }
 
 void Renderer::render()
 {
-	update_uniform();
+	//update all shader view matrix
+	update_view_matrix();
+
 	switch (mode)
 	{
 	case RENDER_FORWARD:
@@ -41,50 +48,59 @@ void Renderer::render()
 		render_flat();
 		break;
 	}
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	render_text();
 	glBindVertexArray(0);
 	glUseProgram(0);
-	//we dont need swapbuffer(SDL_GL_swapwindow())
 	frame++;
 }
 
 void Renderer::resize(uint32_t width, uint32_t height)
 {
+	this->width = width;
+	this->height = height;
 	aspect_ratio = float(width) / float(height);
+	//text_proj = vml::ortho(0.f, (float)width, 0.f, (float)height);
 	glViewport(0, 0, width, height);
 }
 
-void Renderer::init_uniforms()
+void Renderer::init_view_matrix()
 {
+
 	//update shared unform to all shaders
-	Matrix4x4 proj = vml::perspective(45.f, aspect_ratio, 0.001f, 1000.f);
-	if (!cameras.size())
-		LOG_ERROR("empty camera");
+	projection.proj = vml::perspective(45.f, aspect_ratio, 0.001f, 1000.f);
+	projection.text = vml::ortho(0.f, (float)width, 0.f, (float)height);
+	
 	for (auto program : shaders)
 	{
+		//text shader dont need to view mat
+		if (program == shaders[SHADER_TEXT]) continue;
+		if (program == shaders[SHADER_PLAYER])
+		{
+			LOG << "add player shader uniforms" << ENDL;
+		}
 		glUseProgram(program);
 		//set matrix
-		Shader::setUniformMatrix4f(program, proj, "proj", true);
-		Shader::setUniformMatrix4f(program, current_camera()->view(), "view", true);
+		Shader::setUniformMatrix4f(program, projection.proj, "proj", true);
+		Shader::setUniformMatrix4f(program, camera->get_view_matirx(), "view", true);
 	}
 	//unbind shader
 	glUseProgram(0);
 }
 
-void Renderer::update_uniform()
+void Renderer::update_view_matrix()
 {
 	for (auto program : shaders) {
 		glUseProgram(program);
-		Shader::setUniformMatrix4f(program, current_camera()->view(), "view", true);
+		Shader::setUniformMatrix4f(program, camera->get_view_matirx(), "view", true);
 	}
 	glUseProgram(0);
 }
 
 void Renderer::render_forward()
 {
-	glClearColor(0.15, 0.2, 0.25, 1);
-
+	glClearColor(0.15, 0.2, 0.3, 1);
+	glPolygonMode(GL_FRONT, GL_LINE);
 	GLuint &shader_defualt = shaders[SHADER_FORWARD];
 	glUseProgram(shader_defualt);
 
@@ -127,7 +143,7 @@ void Renderer::render_forward()
 		}
 
 	}
-	render_terrian();
+	//render_terrian();
 	//unbind all texture
 	for (uint32_t i = 0; i < MAP_MAX_NUM; ++i)
 	{
@@ -145,26 +161,20 @@ void Renderer::render_terrian()
 	GLuint &shader_terrain = shaders[SHADER_TERRAIN];
 	glUseProgram(shader_terrain);
 
-	Shader::setUniform1i(shader_terrain, frame, "frame");
-	for (auto &geo : geometry)
+	//Shader::setUniform1i(shader_terrain, frame, "frame");
+	for (auto &terrain : terrains)
 	{
+		Mesh& mesh = terrain->mesh;
 		//SAHDER & MATRIX
-		Shader::setUniformMatrix4f(shader_terrain, geo->matrix, "model", true);
+		Shader::setUniformMatrix4f(shader_terrain, terrain->matrix, "model", true);
 
-		//ATTRIB
-		int id = 0;
-		for (auto &mesh : geo->meshes)
-		{
+		glActiveTexture(GL_TEXTURE0);
+		GLuint diffuse_id = glGetUniformLocation(shader_terrain, "terrain_diffuse");
+		glUniform1i(diffuse_id, 0);
 
-			glActiveTexture(GL_TEXTURE0);
-			GLuint diffuse_id = glGetUniformLocation(shader_terrain, "terrain_diffuse");
-			glUniform1i(diffuse_id, 0);
-
-			glBindTexture(GL_TEXTURE_2D, mesh.maps.diffuse->id);
+		glBindTexture(GL_TEXTURE_2D, mesh.maps.diffuse->id);
 	
-			mesh.render();
-			id++;
-		}
+		mesh.render();		
 
 	}
 	//unbind all texture
@@ -213,5 +223,28 @@ void Renderer::render_flat()
 	}
 	
 	//unbind shader
+	glUseProgram(NULL);
+}
+
+void Renderer::render_text()
+{
+	GLuint shader = shaders[SHADER_TEXT];
+	glUseProgram(shader);
+
+	Shader::setUniformMatrix4f(shader, projection.text, "proj", true);		
+	Shader::setUniform1i(shader, frame, "frame");
+	//way to expensive
+	for (auto& text : texts) {
+		if (!text->enable) continue;
+
+		text->render(shader, std::string("Mode : ").append(mode_string),20,20,1,vec3f(1,1,1));
+		text->render(shader, std::string("Fps : ").append(std::to_string(fps)), 20, 40, 1, vec3f(1, 1, 1));
+		text->render(shader, std::string("Position : ")
+			.append(std::to_string(camera->position().x)).append(", ")
+			.append(std::to_string(camera->position().y)).append(", ")
+			.append(std::to_string(camera->position().z)),
+			20, 60, 1, vec3f(1, 1, 1));
+
+	}
 	glUseProgram(NULL);
 }

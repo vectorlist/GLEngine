@@ -16,9 +16,9 @@ uniform int frame;
 
 void main()
 {
-    float f = sin(frame * 0.005) * 3.3;
-    vec3 newPos = position + vec3(0,0,f);
-    outUV = st;
+    vec3 newPos = position;
+    //map scale
+    outUV = st * 35;
     fragColor = normal;
     gl_Position = proj * view * model * vec4(newPos, 1.0);
 }

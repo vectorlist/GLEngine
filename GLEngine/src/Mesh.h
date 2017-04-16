@@ -24,7 +24,11 @@ struct Maps
 class Mesh
 {
 public:
+	Mesh(){}
 	Mesh(std::vector<Vertex> vertice, std::vector<uint32_t> indices);
+	Mesh(std::vector<Vertex> vertice, 
+		std::vector<uint32_t> indices,
+		const std::string &texture);
 	~Mesh();
 
 	std::vector<Vertex> vertices;

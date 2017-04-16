@@ -10,6 +10,17 @@ Mesh::Mesh(std::vector<Vertex> vertice, std::vector<uint32_t> indices)
 	build_buffers();
 }
 
+Mesh::Mesh(
+	std::vector<Vertex> vertice,
+	std::vector<uint32_t> indices,
+	const std::string &texture)
+{
+	this->vertices = vertice;
+	this->indices = indices;
+	build_buffers();
+	setTexture(texture, false, TEXTURE_DIFFUSE);
+}
+
 Mesh::~Mesh()
 {
 	/*glDeleteVertexArrays(1, &vao);
@@ -159,5 +170,6 @@ void Mesh::render()
 {
 	glBindVertexArray(this->vao);
 	glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_LINES, this->indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

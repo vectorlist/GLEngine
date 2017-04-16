@@ -6,10 +6,13 @@ Model::Model()
 
 }
 
-Model::Model(const std::string & filename)
+Model::Model(const std::string & filename, std::string texture)
+	: diffuse_texture_path(texture)
 {
 	loadModel(filename);
 }
+
+
 
 void Model::loadModel(const std::string &path)
 {
@@ -98,5 +101,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		
 	}
 
+	if (diffuse_texture_path.length())
+		return Mesh(vertices, indices, diffuse_texture_path);
 	return Mesh(vertices, indices);
 }

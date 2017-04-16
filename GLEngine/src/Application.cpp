@@ -1,5 +1,11 @@
 #include "Application.h"
 #include <Input.h>
+#include <Performance.h>
+#include <Camera.h>
+#include <player.h>
+
+TimePoint Application::last_frame_time;
+Seconds Application::delta;
 
 Application::Application(const std::string & name, int w, int h)
 	: title(name), width(w), height(h)
@@ -16,7 +22,7 @@ Application::~Application()
 
 bool Application::buildWindow()
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 	//IMG_Init(IMG_INIT_PNG);
 	//IMG_Init(IMG_INIT_JPG);
 	//
@@ -43,14 +49,13 @@ bool Application::buildWindow()
 		LOG_ERROR("failed to init glew");
 		return false;
 	}
-
-	glEnable(GL_DEPTH_TEST);
-
+	SDL_SetHintWithPriority(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1", SDL_HINT_OVERRIDE);
 	SDL_GL_SwapWindow(window);				//init swap buffer
 											/*if (SDL_GL_SetSwapInterval(0) != 0) {
 											printf("WARNING: Unable to disable vsync, %s\n", SDL_GetError());
 											LOG_ERROR("damn");
 											}*/
+	last_frame_time = Clock::now();
 	return true;
 }
 
@@ -60,21 +65,32 @@ void Application::run(Renderer *renderer)
 
 	renderer->initialize();					//clear color and setting
 	renderer->resize(width, height);			//for viewport
-	renderer->init_uniforms();				//update uniform to all shader
-
-	//SDL_SetHintWithPriority(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1", SDL_HINT_OVERRIDE);
-	//SDL_SetRelativeMouseMode(SDL_TRUE);
+	renderer->init_view_matrix();				//update uniform to all shader
 
 	renderer->isRunninig = true;
+	//auto current_time = Clock::now();
+	PlayerCamera* camera = renderer->camera;
+	Player* player = &renderer->camera->player;
 	while (renderer->isRunninig)
 	{
-		Input::event(*renderer, window);	//event hanler
-		//Input::mouseEvent(*renderer);
+	
+		//Performance::begin(Counter_Type::FPS);
+		//Input::event(*renderer);	//event hanler
+		Input::playerEvent(*renderer);
+		
+		player->moving(*renderer->terrains[0].get());
+		camera->move();
+		
 		renderer->render();					//render each
-		SDL_GL_SwapWindow(window);			//swap buffer
+		player->render(renderer);
+		
+		swap_update();						//set global frame time and swap window buffer
+	
+		//renderer->fps = Performance::get_fps(Counter_Type::FPS);
 	}
 	releaseWindow();
 }
+
 
 void Application::releaseWindow()
 {
@@ -82,4 +98,17 @@ void Application::releaseWindow()
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+}
+
+Seconds Application::get_current_time_seconds()
+{ 
+	return delta; 
+}
+
+void Application::swap_update()
+{
+	SDL_GL_SwapWindow(window);			//swap buffer
+	auto current_frame = Clock::now();
+	delta = current_frame - last_frame_time;
+	last_frame_time = current_frame;
 }

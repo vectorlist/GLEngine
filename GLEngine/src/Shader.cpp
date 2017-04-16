@@ -2,6 +2,39 @@
 #include <fstream>
 #include <sstream>
 
+GLuint Shader::load(const char * vertpath, const char * fragpath)
+{
+	std::string vertCode = codeFromFile(vertpath);
+	std::string fragCode = codeFromFile(fragpath);
+
+	GLuint vert = compile(vertCode.c_str(), GL_VERTEX_SHADER, vertpath);
+	GLuint frag = compile(fragCode.c_str(), GL_FRAGMENT_SHADER, fragpath);
+
+	GLuint program = glCreateProgram();
+
+	glAttachShader(program, vert);
+	glAttachShader(program, frag);
+
+	glLinkProgram(program);
+
+	GLint success;
+	GLchar info_log[512];
+
+	glGetProgramiv(program, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(program, 512, NULL, info_log);
+		LOG_ERROR(info_log);
+	}
+
+	//we dont need shader anymore
+	glDeleteShader(vert);
+	glDeleteShader(frag);
+
+	glUseProgram(program);
+
+	return program;
+}
+
 std::string Shader::codeFromFile(const std::string &filename)
 {
 	std::string bits;
@@ -40,39 +73,6 @@ GLuint Shader::compile(const GLchar *code, const GLenum type, const char* path)
 	}
 
 	return shader;
-}
-
-GLuint Shader::load(const char * vertpath, const char * fragpath)
-{
-	std::string vertCode = codeFromFile(vertpath);
-	std::string fragCode = codeFromFile(fragpath);
-
-	GLuint vert = compile(vertCode.c_str(), GL_VERTEX_SHADER, vertpath);
-	GLuint frag = compile(fragCode.c_str(), GL_FRAGMENT_SHADER, fragpath);
-
-	GLuint program = glCreateProgram();
-
-	glAttachShader(program, vert);
-	glAttachShader(program, frag);
-
-	glLinkProgram(program);
-
-	GLint success;
-	GLchar info_log[512];
-
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, info_log);
-		LOG_ERROR(info_log);
-	}
-
-	//we dont need shader anymore
-	glDeleteShader(vert);
-	glDeleteShader(frag);
-
-	glUseProgram(program);
-	
-	return program;
 }
 
 void Shader::setUniform1i(GLuint &program, uint32_t data, const char* name)

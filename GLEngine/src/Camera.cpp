@@ -1,8 +1,9 @@
-#include "Camera.h"
+#include "camera.h"
+#include <SDL2/SDL_keyboard.h>
+#include <SDL2/SDL.h>
 
 
-
-Camera::Camera(vec3f pos, vec3f up, float yaw, float pitch)
+PerspectiveCamera::PerspectiveCamera(vec3f pos, vec3f up, float yaw, float pitch)
 	: front(vec3f(0,0,-1.f)), movement_speed(SPEED), mouseSensivity(SENSIVITY), zoom(ZOOM)
 {
 	this->pos = pos;
@@ -13,16 +14,16 @@ Camera::Camera(vec3f pos, vec3f up, float yaw, float pitch)
 }
 
 
-Camera::~Camera()
+PerspectiveCamera::~PerspectiveCamera()
 {
 }
 
-Matrix4x4 Camera::view()
+Matrix4x4 PerspectiveCamera::view()
 {
 	return vml::lookAt(pos, pos + front, up);
 }
 
-void Camera::process_keyboard(Camera_Movement direction, float deltaTime)
+void PerspectiveCamera::process_keyboard(Camera_Movement direction, float deltaTime)
 {
 	float velocity = this->movement_speed * deltaTime;
 	if (direction == FORWARD)
@@ -35,7 +36,7 @@ void Camera::process_keyboard(Camera_Movement direction, float deltaTime)
 		this->pos += this->right * velocity;
 }
 
-void Camera::process_mouse_movement(float xoffset, float yoffset, bool constrain_pitch)
+void PerspectiveCamera::process_mouse_movement(float xoffset, float yoffset, bool constrain_pitch)
 {
 	xoffset *= this->mouseSensivity;
 	yoffset *= this->mouseSensivity;
@@ -43,7 +44,6 @@ void Camera::process_mouse_movement(float xoffset, float yoffset, bool constrain
 	this->yaw += xoffset;
 	this->pitch += yoffset;
 
-	// Make sure that when pitch is out of bounds, screen doesn't get flipped
 	if (constrain_pitch)
 	{
 		if (this->pitch > 89.0f)
@@ -51,12 +51,10 @@ void Camera::process_mouse_movement(float xoffset, float yoffset, bool constrain
 		if (this->pitch < -89.0f)
 			this->pitch = -89.0f;
 	}
-
-	// Update Front, Right and Up Vectors using the updated Eular angles
 	this->update();
 }
 
-void Camera::process_mouse_scroll(float yoffset)
+void PerspectiveCamera::process_mouse_scroll(float yoffset)
 {
 	if (this->zoom >= 1.0f && this->zoom <= 45.0f)
 		this->zoom -= yoffset;
@@ -66,7 +64,7 @@ void Camera::process_mouse_scroll(float yoffset)
 		this->zoom = 45.0f;
 }
 
-void Camera::update()
+void PerspectiveCamera::update()
 {
 	vec3f front;
 	front.x = cos(radians(yaw)) * cos(radians(pitch));
@@ -78,86 +76,84 @@ void Camera::update()
 	this->up = vec3f::cross(this->right, this->front).normalized();
 }
 
-	/*-----------------------------------------------------*/
+			/*PLAYER*/
 
-VkCamera::VkCamera(float fov, float aspect, float znear, float zfar)
+PlayerCamera::PlayerCamera(Player &player)
+	: player(player)
 {
-	this->fov = fov;
-	this->aspect = aspect;
-	this->znear = znear;
-	this->zfar = zfar;
-	
-	proj = vml::perspective(fov, aspect, znear, zfar);
+	player.camera = this;
 }
 
-void VkCamera::update_view()
+void PlayerCamera::calc_zoom()
 {
-	Matrix4x4 rot_mat;
-	Matrix4x4 trans_mat;
-
-	rot_mat.rotate(AXIS::X, rot.x);
-	rot_mat.rotate(AXIS::Y, rot.y);
-	rot_mat.rotate(AXIS::Z, rot.z);
-
-	trans_mat.translate(pos);
-
-	view = rot_mat * trans_mat;
+	float zoom_level = mouse_wheel_delta;
+	distance_from_player -= zoom_level;
+	mouse_wheel_delta = 0;
 }
 
-void VkCamera::update_aspect_ratio(float aspect)
+void PlayerCamera::calc_pitch()
 {
-	this->aspect = aspect;
-	proj = vml::perspective(fov, this->aspect, znear, zfar);
+	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
+	{
+		//calc degree angle player to camera
+		float pitch_change = mouse_y_delta;
+		pitch += pitch_change;
+		mouse_y_delta = 0; //reset
+	}
 }
 
-void VkCamera::set_position(const vec3f &position)
+void PlayerCamera::calc_angle_around_player()
 {
-	this->pos = position;
-	update_view();
+	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
+	{
+		//vertical
+		float angle_chagne = mouse_x_delta;
+		angle_around_player -= angle_chagne;
+		mouse_x_delta = 0;
+	}
 }
 
-void VkCamera::set_rotation(const vec3f &rotation)
+void PlayerCamera::calc_camera_position(float hori_distance, float vert_distance)
 {
-	this->rot = rotation;
-	update_view();
+	//get y rotation theta
+	float theta_rotation = player.get_rot_y() + angle_around_player;
+	float x_offset = hori_distance * sin(radians(theta_rotation));
+	float z_offset = hori_distance * cos(radians(theta_rotation));
+	m_position.x = player.position().x - x_offset;		//invert from player
+	m_position.y = player.position().y + vert_distance;	// y doset not need
+	m_position.z = player.position().z - z_offset;
 }
 
-void VkCamera::rotate(const vec3f &delta)
+void PlayerCamera::move()
 {
-	this->rot += delta;
-	update_view();
+	// 1 .calc zom
+	calc_zoom();
+	calc_pitch();
+	calc_angle_around_player();
+	float horicontal_distance = distance_from_player * cos(radians(pitch));
+	float vertical_distance = distance_from_player * sin(radians(pitch));
+	calc_camera_position(horicontal_distance, vertical_distance);
+	yaw = 180 - (player.get_rot_y() + angle_around_player);
 }
 
-void VkCamera::set_translate(const vec3f &translate)
+Matrix4x4 PlayerCamera::get_view_matirx()
 {
-	this->pos = translate;
-	update_view();
+	//player Camera view matrix
+	Matrix4x4 view;
+	view.rotate(AXIS::X, get_pitch());
+	view.rotate(AXIS::Y, get_yaw());
+	view.translate(-position());
+	return view;
 }
 
-void VkCamera::translate(const vec3f &delta)
+//input
+void PlayerCamera::mouse_wheel(int delta)
 {
-	this->pos += delta;
-	update_view();
+	mouse_wheel_delta = delta;
 }
 
-void VkCamera::update(float delta)
+void PlayerCamera::mouse_move(int x, int y)
 {
-	vec3f front;
-	front.x = -cos(radians(rot.x)) * sin(radians(rot.y));
-	front.y = sin(radians(rot.x));
-	front.z = cos(radians(rot.x)) * cos(radians(rot.y));
-	front.normalize();
-
-	float move_speed = delta * speed.move;
-
-	if (keys.up)
-		pos += front * move_speed;
-	if (keys.down)
-		pos -= front * move_speed;
-	if (keys.up)
-		pos -= vec3f::cross(front, vec3f(0, 1, 0)).normalized() * move_speed;
-	if (keys.up)
-		pos += vec3f::cross(front, vec3f(0, 1, 0)).normalized() * move_speed;
-
-	update_view();
+	mouse_x_delta = 0.3 * x;
+	mouse_y_delta = 0.3 * y;
 }

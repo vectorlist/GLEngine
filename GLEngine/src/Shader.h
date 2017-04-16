@@ -5,13 +5,10 @@
 
 namespace Shader
 {
-
+	GLuint load(const char* vertfile, const char* fragfile);
 	std::string codeFromFile(const std::string &filename);
 	GLuint compile(const GLchar* source, const GLenum type, const char *code);
-	GLuint load(const char* vertfile, const char* fragfile);
 
-	//uniform
-	//test
 	void setUniform1i(GLuint &program, uint32_t data, const char* name);
 	void setUniform1f(GLuint &program, float data, const char* name);
 	void setUniForm2i(GLuint &program, const vec2i &data, const char* name);

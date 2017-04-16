@@ -49,6 +49,12 @@ const float MATRIX_EPSILON = 1e-5f;
 #undef VML_USE_VULKAN
 #endif
 
+#define VML_ORTHO						true
+#ifdef VML_USE_ORTHO
+#undef VML_ORTHO
+#endif // VML_USE_ORTHO
+
+
 const inline float radians(float deg)
 {
 	return VML_PI / 180.f * deg;

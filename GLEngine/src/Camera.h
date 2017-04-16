@@ -4,10 +4,12 @@
 #include <vec3f.h>
 #include <matrix4x4.h>
 #include <vml.h>
+#include <Renderer.h>
+#include <player.h>
 
 #define YAW			-90.f
 #define PITCH		0.0f
-#define SPEED		3.0f
+#define SPEED		2.f
 #define SENSIVITY	0.25f
 #define ZOOM		45.f
 
@@ -19,12 +21,14 @@ enum Camera_Movement
 	RIGHT
 };
 
-class Camera
+class PerspectiveCamera
 {
 public:
-	Camera(vec3f pos = vec3f(0), vec3f up = vec3f(0,1,0),
+	PerspectiveCamera(vec3f pos = vec3f(0), vec3f up = vec3f(0,1,0),
 		float yaw = YAW, float pitch = PITCH);
-	~Camera();
+	~PerspectiveCamera();
+
+	/*SHARE FUNC*/
 
 	vec3f pos;
 	vec3f front;
@@ -47,46 +51,41 @@ private:
 	void update();
 };
 
-	/*--------------------------------------------------------*/
 
-struct Camera_key
-{
-	bool up = false;
-	bool down = false;
-	bool left = false;
-	bool right = false;
-};
-
-class VkCamera 
+class PlayerCamera
 {
 public:
-	VkCamera(float fov, float aspect, float znear, float zfar);
-	float fov;
-	float znear,zfar;
-	float aspect;
+	PlayerCamera(Player &player);
 
-	void update_view();
-	void update_aspect_ratio(float aspect);
 
-	vec3f rot;
-	vec3f pos;
+	/*SHARE FUNC*/
+	void mouse_wheel(int delta);
+	void mouse_move(int x, int y);
+	void move();
+	//get view matrix
+	Matrix4x4 get_view_matirx();
+	Player &player;
+	//calc func
+	void calc_zoom();
+	void calc_pitch();
+	void calc_angle_around_player();
+	void calc_camera_position(float hori, float vert);
+	//motion
+	
 
-	Matrix4x4 proj;
-	Matrix4x4 view;
+	vec3f position() { return m_position; }
+	float get_pitch() { return pitch; }
+	float get_yaw() { return yaw; }
+private:
 
-	Camera_key keys;
+	float pitch = 0.0f;
+	float yaw = 0.f;
+	float roll = 0.0f;
+	float distance_from_player = 25.f;
+	float angle_around_player = 0.0f;
+	int mouse_wheel_delta = 0; 
+	int mouse_x_delta = 0;
+	int mouse_y_delta = 0;
+	vec3f m_position;
 
-	struct 
-	{
-		float rot = 1.0f;
-		float move = 1.0f;
-	}speed;
-
-	void set_position(const vec3f &position);
-	void set_rotation(const vec3f &rotation);
-	void rotate(const vec3f &delta);
-	void set_translate(const vec3f &translate);
-	void translate(const vec3f &delta);
-
-	void update(float delta);
 };

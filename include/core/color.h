@@ -44,15 +44,7 @@ public:
 	bool isBlack() const;
 	float luminance() const;
 
-	/*STATIC MEMBER*/
-	static const Color black;
-	static const Color white;
-	static const Color red;
-	static const Color yellow;
-	static const Color error;
-	static const Color null;
-	
-
+	/*STATIC*/
 	static Color clamp(const Color &c, float min = 0.0, float max = 1.0);
 	static Color gamma(const Color &c, float gamma = 2.2f);
 	
@@ -183,6 +175,23 @@ inline bool Color::isBlack() const
 inline float Color::luminance() const
 {
 	return 0.212671f * r + 0.715160f * g + 0.072169f * b;
+}
+
+inline Color Color::clamp(const Color &c, float min, float max)
+{
+	float r, g, b;
+	r = std::max(min, std::min(max, c.r));
+	g = std::max(min, std::min(max, c.g));
+	b = std::max(min, std::min(max, c.b));
+	return Color(r, g, b);
+}
+
+inline Color Color::gamma(const Color &c, float gamma)
+{
+	float g = 1.0f / gamma;
+	return Color(std::max(0.0f, std::min(1.0f, std::pow(c.r, g))),
+		std::max(0.0f, std::min(1.0f, std::pow(c.g, g))),
+		std::max(0.0f, std::min(1.0f, std::pow(c.b, g))));
 }
 
 typedef std::unique_ptr<Color[]> ColorPtr;

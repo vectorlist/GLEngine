@@ -10,11 +10,11 @@ class Model
 {
 public:
 	Model();
-	Model(const std::string &filename);
+	Model(const std::string &filename, std::string texture = "");
 	~Model() {};
 
 	std::vector<Mesh> meshes;
-
+	std::string diffuse_texture_path;
 	void loadModel(const std::string &path);
 private:
 	void processNode(aiNode* node, const aiScene* scene);

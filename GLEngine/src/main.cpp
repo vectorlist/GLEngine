@@ -15,6 +15,9 @@ void setConsoleOutput(int x, int y, int w, int h)
 	MoveWindow(console, x, y, w, h, TRUE);
 }
 
+//test
+#include <main.h>
+#include <Camera.h>
 
 int main(int args, char* argv[])
 {
@@ -23,13 +26,17 @@ int main(int args, char* argv[])
 	Application app("OpenGL Engine",1280,720);
 	Renderer renderer;
 
+	Model model(DIR_MODEL"boxman/boxman.obj", DIR_MODEL"boxman/boxman.jpg");
+	Player p(model,vec3f(0,100,0),0,0,0,1.f);
+	PlayerCamera camera(p);
+
 	renderer.setRenderMode(RENDER_FORWARD);
-	Initializer::initCamera(renderer);
+	Initializer::initCamera(renderer, camera);
 	Initializer::initScene(renderer);
 	Initializer::initTextures(renderer);
 
 	app.run(&renderer);
-
+	
 	return 0;
 }
 

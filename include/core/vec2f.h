@@ -3,6 +3,7 @@
 #define VEC2F_H
 
 #include <algorithm>
+#include <iostream>
 
 template<typename T>
 class vec2
@@ -48,11 +49,29 @@ public:
 		return x == other.x && y == other.y;
 	}
 	
+	float length() const;
+
 	T x, y;
+
+	friend std::ostream& operator<<(std::ostream &o, const vec2<T> &v)
+	{
+		if(typeid(T) == typeid(int))
+			o << "vec2i( " << v.x << ", " << v.y << ')';
+		else
+			o << "vec2f( " << v.x << ", " << v.y << ')';
+		return o;
+	}
 };
 
 typedef vec2<float> vec2f;
 typedef vec2<int> vec2i;
 
+template<typename T>
+inline float vec2<T>::length() const
+{
+	return sqrtf(x * x + y * y);
+}
 
 #endif //VEC3F_H
+
+
