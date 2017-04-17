@@ -1,12 +1,10 @@
-## DESCRIPTION
-
 # GLEngine
 Simple Game Renderer for Learning
 
 Systerm:
 
-*Win10 x86
-*Visual Studio 2015
+* Win10 x86
+* Visual Studio 2015
 
 Library:
 
