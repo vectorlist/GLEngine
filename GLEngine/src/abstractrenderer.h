@@ -3,6 +3,7 @@
 #include <config.h>
 #include <vector>
 #include <Mesh.h>
+#include <Shader.h>
 
 class AbstractRenderer
 {
@@ -15,6 +16,8 @@ public:
 	std::vector<text_ptr> texts;
 
 	void setRenderMode(Render_Mode m);
+	void initAllShaders();
+	void updateAllShader();
 
 	uint32_t frame = 0;
 	float aspect_ratio;
@@ -23,7 +26,9 @@ public:
 	std::string mode_string;
 	
 	float fps = 0.0f;
-	float height_terrain = 0.f;
+	//Debug
+	float terrain_height = 0.f;
+	uint32_t terrain_id;
 	GLuint shaders[SHADER_MAX_NUM];
 
 	uint32_t width, height;
@@ -60,4 +65,26 @@ inline void AbstractRenderer::setRenderMode(Render_Mode m)
 {
 	mode = m;
 	mode_string = modeToString(mode);
+}
+
+inline void AbstractRenderer::initAllShaders()
+{
+	shaders[SHADER_FORWARD] = Shader::load(DIR_SHADER"forwards.vert", DIR_SHADER"forwards.frag");
+	shaders[SHADER_TERRAIN] = Shader::load(DIR_SHADER"terrain.vert", DIR_SHADER"terrain.frag");
+	shaders[SHADER_FLAT] = Shader::load(DIR_SHADER"flat.vert", DIR_SHADER"flat.frag");
+	shaders[SHADER_PLAYER] = Shader::load(DIR_SHADER"player.vert", DIR_SHADER"player.frag");
+	shaders[SHADER_TEXT] = Shader::load(DIR_SHADER"text.vert", DIR_SHADER"text.frag");
+
+}
+
+inline void AbstractRenderer::updateAllShader()
+{
+
+	for (auto &shader : shaders)
+	{
+		if (shader)
+			glDeleteProgram(shader);
+	}
+	initAllShaders();
+	LOG << "update shaders" << ENDL;
 }

@@ -20,11 +20,15 @@ public:
 	using Entity::Entity;
 
 	void render(Renderer &renderer);
-	void moveProcess(const Terrain &terrain);
+	void moveProcess(std::vector<terrain_ptr> &terrains);
 
 	void setCamera(PlayerCamera& camera) { m_camera = &camera; }
 	PlayerCamera& camera() { return *m_camera; }
 	float debug_height = 0.f;
+
+	//test
+	uint32_t currentTerrainID();
+	int debug_terrain_id = 0;
 private:
 	void inputStateEvent();
 	void jump();

@@ -89,7 +89,10 @@ namespace Input
 			LOG << "Quit..." << ENDL;
 			renderer.isRunninig = false;
 			break;
-
+		case SDLK_F5:
+			renderer.init_view_matrix();
+			renderer.updateAllShader();
+			break;
 		/*case SDLK_w:
 			renderer.current_camera()->process_keyboard(FORWARD, 3.f);
 			break;

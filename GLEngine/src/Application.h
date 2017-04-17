@@ -20,6 +20,7 @@ public:
 	~Application();
 
 	bool buildWindow();
+	void contextInfo();
 	//main loop
 	void run(Renderer &renderer);
 

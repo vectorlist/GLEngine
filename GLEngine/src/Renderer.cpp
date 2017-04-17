@@ -163,14 +163,29 @@ void Renderer::render_terrian()
 	for (auto &terrain : terrains)
 	{
 		Mesh& mesh = terrain->mesh;
-		//SAHDER & MATRIX
+		
 		Shader::setUniformMatrix4f(shader_terrain, terrain->matrix, "model", true);
+		Shader::setUniForm3f(shader_terrain, camera->player().position()
+			+ vec3f(0,1,0), "lightPos");
+
+		//TODO : replace to Uniform buffers
+		/*Shader::setUniForm3f(shader_terrain, camera->player().position()
+			+ vec3f(0,0,10), "light.light01");
+		Shader::setUniForm3f(shader_terrain, camera->player().position()
+			+ vec3f(3,30,0), "light.light02");*/
+
+		
 
 		glActiveTexture(GL_TEXTURE0);
-		GLuint diffuse_id = glGetUniformLocation(shader_terrain, "terrain_diffuse");
+		GLuint diffuse_id = glGetUniformLocation(shader_terrain, "terrain_diffuse01");
 		glUniform1i(diffuse_id, 0);
-
 		glBindTexture(GL_TEXTURE_2D, mesh.maps.diffuse->id);
+
+
+		glActiveTexture(GL_TEXTURE1);
+		GLuint diffuse_id02 = glGetUniformLocation(shader_terrain, "terrain_diffuse02");
+		glUniform1i(diffuse_id02, 1);
+		glBindTexture(GL_TEXTURE_2D, this->textures.terrain01->id);
 	
 		mesh.render();		
 
@@ -246,11 +261,13 @@ void Renderer::render_text()
 		auto x = std::to_string(camera->player().position().x);
 		auto y = std::to_string(camera->player().position().y);
 		auto z = std::to_string(camera->player().position().z);
-		auto h = std::to_string(height_terrain);
+		auto h = std::to_string(terrain_height);
+		auto id = std::to_string(terrain_id);
 		text->render(shader, std::string("Player Posotion : ")
 			.append(x).append(", ")
 			.append(y).append(", ").append(z), 20, 80, 1, vec3f(1, 1, 1));
-		text->render(shader, std::string("Height Terrain : ").append(h), 20, 100, 1, vec3f(1, 1, 1));
+		text->render(shader, std::string("Terrain Height : ").append(h), 20, 100, 1, vec3f(1, 1, 1));
+		text->render(shader, std::string("Terrain ID : ").append(id), 20, 120, 1, vec3f(1, 1, 1));
 		
 
 	}

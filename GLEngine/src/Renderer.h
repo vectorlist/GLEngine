@@ -3,7 +3,8 @@
 #include <config.h>
 #include <vector>
 #include <Mesh.h>
-#include <baserenderer.h>
+#include <abstractrenderer.h>
+#include <light.h>
 
 class PlayerCamera;
 class Renderer : public AbstractRenderer
@@ -28,6 +29,18 @@ public:
 		Matrix4x4 proj;
 		Matrix4x4 text;
 	}projection;
+
+	//test mix texture
+	struct
+	{
+		Texture* terrain01;
+		Texture* terrain02;
+
+	}textures;
+
+	//test uniform lights
+	Light uniform_light;
+
 
 	PlayerCamera* camera;
 

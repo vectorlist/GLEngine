@@ -104,3 +104,8 @@ void Shader::setUniformMatrix4f(GLuint &program, const Matrix4x4 &mat, const cha
 {
 	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, transpose, mat.constData());
 }
+
+void Shader::load_vec3f(GLint location, const vec3f & data)
+{
+	//glUnifo
+}

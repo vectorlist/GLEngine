@@ -14,6 +14,7 @@ constexpr std::uint32_t max_pixel_colour = 256 * 256 * 256;
 
 class Terrain {
 public:
+	//Terrain(){}
 	Terrain::Terrain(float x, float z,
 		const std::string &texture_path, 
 		std::string height_map_path = "");
@@ -35,6 +36,7 @@ public:
 	float get_x()const;
 	float get_z()const;
 	vec3f get_relative_pos() const;
+
 private:
 	std::vector<std::vector<float>> heights;
 	

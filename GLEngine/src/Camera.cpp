@@ -16,7 +16,7 @@ void PlayerCamera::moveProcess()
 	float H_distance = distanceFromPlayer * cos(radians(m_pitch));
 	float V_distance = distanceFromPlayer * sin(radians(m_pitch));
 	calcPosition(H_distance, V_distance);
-	m_yaw = 180 - (m_player.get_rot_y() + angleAroundPlayer);
+	m_yaw = 180 - (m_player.rotY() + angleAroundPlayer);
 }
 
 void PlayerCamera::calcZoom()
@@ -50,7 +50,7 @@ void PlayerCamera::calcAngle()
 void PlayerCamera::calcPosition(float hori_distance, float vert_distance)
 {
 	//get y rotation theta
-	float theta_rotation = m_player.get_rot_y() + angleAroundPlayer;
+	float theta_rotation = m_player.rotY() + angleAroundPlayer;
 	float x_offset = hori_distance * sin(radians(theta_rotation));
 	float z_offset = hori_distance * cos(radians(theta_rotation));
 	m_position.x = m_player.position().x - x_offset;		//invert from player

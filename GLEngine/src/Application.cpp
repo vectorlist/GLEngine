@@ -36,8 +36,8 @@ bool Application::buildWindow()
 	}
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	context = SDL_GL_CreateContext(window);
@@ -50,13 +50,29 @@ bool Application::buildWindow()
 		return false;
 	}
 	SDL_SetHintWithPriority(SDL_HINT_MOUSE_RELATIVE_MODE_WARP, "1", SDL_HINT_OVERRIDE);
-	SDL_GL_SwapWindow(window);				//init swap buffer
-											/*if (SDL_GL_SetSwapInterval(0) != 0) {
-											printf("WARNING: Unable to disable vsync, %s\n", SDL_GetError());
-											LOG_ERROR("damn");
-											}*/
+	SDL_GL_SwapWindow(window);
+
 	last_frame_time = Clock::now();
+	contextInfo();
 	return true;
+}
+
+void Application::contextInfo()
+{
+	GLint  frag_block;
+	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &frag_block);
+
+	auto vendor = glGetString(GL_VENDOR);
+	auto r = glGetString(GL_RENDERER);
+	//auto extension = glGetString(GL_EXTENSIONS);
+	auto glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
+
+
+	LOG << "Video Device	           : " << r << ENDL;
+	LOG << "GLSL Version               : " << glsl_version << ENDL;
+	LOG << "Max Fragment Uniform Block : " << frag_block << ENDL;
+	
+
 }
 
 void Application::run(Renderer &renderer)
@@ -78,11 +94,11 @@ void Application::run(Renderer &renderer)
 		//Input::event(*renderer);	//event hanler
 		Input::playerEvent(renderer);
 		
-		
-		player.moveProcess(*renderer.terrains[0].get());
-		renderer.height_terrain = player.debug_height;
+		//player movement and get terrain id and terrain height
+		player.moveProcess(renderer.terrains);
+		renderer.terrain_height = player.debug_height;
+		renderer.terrain_id = player.debug_terrain_id;
 		camera.moveProcess();
-
 
 		renderer.render();					//render each
 		player.render(renderer);

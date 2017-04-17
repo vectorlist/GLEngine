@@ -33,17 +33,27 @@ void Player::inputStateEvent()
 	}
 }
 
-void Player::moveProcess(const Terrain &terrain)
+uint32_t Player::currentTerrainID()
 {
-	//set input Key states
+	if (position().x < 0.f && position().z > 0)  return 0;
+	else if (position().x >= 0.f && position().z >= 0) return 1;  //x 0-800 z 0-800
+	else if (position().x >= 0.0f && position().z < 0) return 2;  //0 -- 800 0 --- -800
+	else if (position().x < 0.0f && position().z < 0) return 3;  //0 -- -800 0 --- -800
+	//LOG_ERROR("failed to get terrain id");
+	//return 0;
+}
+
+void Player::moveProcess(std::vector<terrain_ptr> &terrains)
+{
+	//set terrain ID
+	debug_terrain_id = currentTerrainID();
+	Terrain *terrain = terrains[debug_terrain_id].get();
+
 	inputStateEvent();
-	//rotation
 	rotation(0, curruntTurnSpeed * APP_CURRENT_TIME, 0);
-	//get distace
 	const auto distance = (currentRunSpeed * APP_CURRENT_TIME);
-	//LOG << distance << ENDL;
-	const auto dx = distance * sin(radians(get_rot_y()));
-	const auto dz = distance * cos(radians(get_rot_y()));
+	const auto dx = distance * sin(radians(rotY()));
+	const auto dz = distance * cos(radians(rotY()));
 	//moving by rotation axis
 	translate(dx, 0, dz);
 
@@ -54,9 +64,9 @@ void Player::moveProcess(const Terrain &terrain)
 	// --- 0(800) --- 1(-800) ---- 2(800) -------3(-800) terrain
 	//vector<Terrain> swtich to by id
 	//realworld position
-
+	
 	//not camera position 
-	debug_height = terrain.getHeightOfTerrain(position().x, position().z);
+	debug_height = terrain->getHeightOfTerrain(position().x, position().z);
 	//LOG << "collision height : " << collision_height<< ENDL;
 	//check player pos.y and collision height
 	if (position().y < debug_height) {
@@ -99,10 +109,10 @@ void Player::render(Renderer &renderer)
 	//set to translate model matrix
 	Matrix4x4 model_matrix;
 	model_matrix.translate(position());
-	model_matrix.rotate(AXIS::X, get_rot_x());
-	model_matrix.rotate(AXIS::Y, get_rot_y());
-	model_matrix.rotate(AXIS::Z, get_rot_z());
-	model_matrix.scale(vec3f(get_scale()));
+	model_matrix.rotate(AXIS::X, rotX());
+	model_matrix.rotate(AXIS::Y, rotY());
+	model_matrix.rotate(AXIS::Z, rotZ());
+	model_matrix.scale(vec3f(scale()));
 
 	//texture
 	glActiveTexture(GL_TEXTURE0);

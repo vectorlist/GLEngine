@@ -20,4 +20,6 @@ namespace Shader
 		const char* name,
 		bool transpose = false);
 
+	void load_vec3f(GLint location, const vec3f &data);
+
 }

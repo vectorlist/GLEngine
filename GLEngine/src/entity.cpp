@@ -2,7 +2,7 @@
 
 
 Entity::Entity(Model &model, const vec3f & pos, float rx, float ry, float rz, float scale)
-	: model(model), m_position(pos), rot_x(rx), rot_y(ry), rot_z(rz), scale(scale)
+	: model(model), m_position(pos), rot_x(rx), rot_y(ry), rot_z(rz), m_scale(scale)
 {
 
 }
@@ -23,6 +23,7 @@ void Entity::rotation(float x, float y, float z)
 float Entity::get_texture_offset_x()
 {
 	//TODO	get offset of texture terrain
+	
 	return 0.0f;
 }
 

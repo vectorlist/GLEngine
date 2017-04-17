@@ -72,6 +72,9 @@
     <ClCompile Include="src\player.cpp">
       <Filter>src\Player</Filter>
     </ClCompile>
+    <ClCompile Include="src\light.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\config.h">
@@ -134,9 +137,6 @@
     <ClInclude Include="src\terrain.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\baserenderer.h">
-      <Filter>src\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
@@ -145,6 +145,12 @@
     </ClInclude>
     <ClInclude Include="src\player.h">
       <Filter>src\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="src\abstractrenderer.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\light.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

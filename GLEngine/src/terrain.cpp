@@ -226,15 +226,11 @@ float Terrain::get_height(unsigned int x, unsigned int z, SDL_Surface* map)
 	uint32_t g = point[1];
 	uint32_t b = point[2];
 	uint32_t rgb = (r << 16) + (g << 8) + b;
-	//LOG << height_value << ENDL;
-	//uint32_t max_h = 256 * 256 * 256;
+	
 	double value = rgb;
 	value /= (max_pixel_colour / 2);
 	value -= 1.0;
 	value *= MAX_HEIGHT;
-	/*value += MAX_PIXEL_COLOR_RGB / 2;
-	value /= MAX_PIXEL_COLOR_RGB / 2;
-	value *= MAX_HEIGHT;*/
 
 	return value;
 

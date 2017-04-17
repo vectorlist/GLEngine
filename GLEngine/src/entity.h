@@ -21,15 +21,15 @@ public:
 	Model model;
 
 	vec3f& position()  { return m_position; }
-	float get_rot_x() { return rot_x; }
-	float get_rot_y() { return rot_y; }
-	float get_rot_z() { return rot_z; }
-	float get_scale() { return scale; }
+	float rotX() { return rot_x; }
+	float rotY() { return rot_y; }
+	float rotZ() { return rot_z; }
+	float scale() { return m_scale; }
 
 private:
 	vec3f m_position;
 	float rot_x = 0.0f;
 	float rot_y = 0.0f;
 	float rot_z = 0.0f;
-	float scale;
+	float m_scale;
 };
