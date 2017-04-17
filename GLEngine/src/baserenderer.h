@@ -12,10 +12,8 @@ public:
 
 	std::vector<model_ptr> models;
 	std::vector<terrain_ptr> terrains;
-	//std::vector<camera_ptr> cameras;
 	std::vector<text_ptr> texts;
 
-	//PerspectiveCamera* current_camera();
 	void setRenderMode(Render_Mode m);
 
 	uint32_t frame = 0;
@@ -25,6 +23,7 @@ public:
 	std::string mode_string;
 	
 	float fps = 0.0f;
+	float height_terrain = 0.f;
 	GLuint shaders[SHADER_MAX_NUM];
 
 	uint32_t width, height;

@@ -44,14 +44,21 @@ namespace Input
 				renderer.isRunninig = false;
 				break;
 			case SDL_MOUSEMOTION:
-				renderer.camera->mouse_move(e.motion.xrel, e.motion.yrel);	//relative mouse
+				renderer.camera->mouseMoveEvent(e.motion.xrel, e.motion.yrel);	//relative mouse
 				break;
 			case SDL_MOUSEWHEEL:
-				renderer.camera->mouse_wheel(e.wheel.y);
+				renderer.camera->mouseWheelEvent(e.wheel.y);
 				break;
 			case SDL_KEYDOWN:
 				keyPressEvent(renderer, e);
 				break;
+			/*case SDL_MOUSEBUTTONDOWN:
+				mousePressEvent(renderer, e);
+				break;
+			case SDL_MOUSEBUTTONUP: 
+				mouseReleaseEvent(renderer, e);
+				break;*/
+				
 			default:
 				break;
 			}

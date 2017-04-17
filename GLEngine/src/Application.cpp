@@ -59,34 +59,37 @@ bool Application::buildWindow()
 	return true;
 }
 
-void Application::run(Renderer *renderer)
+void Application::run(Renderer &renderer)
 {
-	if (!renderer) return;
+	
 
-	renderer->initialize();					//clear color and setting
-	renderer->resize(width, height);			//for viewport
-	renderer->init_view_matrix();				//update uniform to all shader
+	renderer.initialize();					//clear color and setting
+	renderer.resize(width, height);			//for viewport
+	renderer.init_view_matrix();				//update uniform to all shader
+	renderer.isRunninig = true;
 
-	renderer->isRunninig = true;
-	//auto current_time = Clock::now();
-	PlayerCamera* camera = renderer->camera;
-	Player* player = &renderer->camera->player;
-	while (renderer->isRunninig)
+	PlayerCamera& camera = *renderer.camera;
+	Player& player = camera.player();
+
+	while (renderer.isRunninig)
 	{
 	
-		//Performance::begin(Counter_Type::FPS);
+		Performance::begin(Counter_Type::FPS);
 		//Input::event(*renderer);	//event hanler
-		Input::playerEvent(*renderer);
+		Input::playerEvent(renderer);
 		
-		player->moving(*renderer->terrains[0].get());
-		camera->move();
 		
-		renderer->render();					//render each
-		player->render(renderer);
+		player.moveProcess(*renderer.terrains[0].get());
+		renderer.height_terrain = player.debug_height;
+		camera.moveProcess();
+
+
+		renderer.render();					//render each
+		player.render(renderer);
 		
 		swap_update();						//set global frame time and swap window buffer
-	
-		//renderer->fps = Performance::get_fps(Counter_Type::FPS);
+		Performance::end(Counter_Type::FPS);
+		renderer.fps = Performance::get_fps(Counter_Type::FPS);
 	}
 	releaseWindow();
 }

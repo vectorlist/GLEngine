@@ -2,9 +2,89 @@
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL.h>
 
+PlayerCamera::PlayerCamera(Player &player)
+	: m_player(player)
+{
+	player.setCamera(*this);
+}
+
+void PlayerCamera::moveProcess()
+{
+	calcZoom();
+	calcPitch();
+	calcAngle();
+	float H_distance = distanceFromPlayer * cos(radians(m_pitch));
+	float V_distance = distanceFromPlayer * sin(radians(m_pitch));
+	calcPosition(H_distance, V_distance);
+	m_yaw = 180 - (m_player.get_rot_y() + angleAroundPlayer);
+}
+
+void PlayerCamera::calcZoom()
+{
+	float zoom_level = mouse_wheel_delta;
+	distanceFromPlayer -= zoom_level;
+	mouse_wheel_delta = 0;
+}
+
+void PlayerCamera::calcPitch()
+{
+	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
+	{
+		float pitch_delta = mouse_y_delta;
+		m_pitch += pitch_delta;
+		mouse_y_delta = 0; //reset
+	}
+}
+
+void PlayerCamera::calcAngle()
+{
+	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
+	{
+		//vertical
+		float angle_chagne = mouse_x_delta;
+		angleAroundPlayer -= angle_chagne;
+		mouse_x_delta = 0;
+	}
+}
+
+void PlayerCamera::calcPosition(float hori_distance, float vert_distance)
+{
+	//get y rotation theta
+	float theta_rotation = m_player.get_rot_y() + angleAroundPlayer;
+	float x_offset = hori_distance * sin(radians(theta_rotation));
+	float z_offset = hori_distance * cos(radians(theta_rotation));
+	m_position.x = m_player.position().x - x_offset;		//invert from player
+	m_position.y = m_player.position().y + vert_distance;	// y doset not need
+	m_position.z = m_player.position().z - z_offset;
+}
+
+Matrix4x4 PlayerCamera::viewMatrix()
+{
+	//player Camera view matrix
+	Matrix4x4 view;
+	view.rotate(AXIS::X, pitch());
+	view.rotate(AXIS::Y, yaw());
+	vec3f center = -position() - vec3f(0, 3, 0);
+	view.translate(center);
+	return view;
+}
+
+void PlayerCamera::mouseMoveEvent(int x, int y)
+{
+	mouse_x_delta = 0.3 * x;
+	mouse_y_delta = 0.3 * y;
+}
+
+
+void PlayerCamera::mouseWheelEvent(int delta)
+{
+	mouse_wheel_delta = delta;
+}
+
+//----------------- PERSPECTIVE CAMERA ---------------------
 
 PerspectiveCamera::PerspectiveCamera(vec3f pos, vec3f up, float yaw, float pitch)
-	: front(vec3f(0,0,-1.f)), movement_speed(SPEED), mouseSensivity(SENSIVITY), zoom(ZOOM)
+	: front(vec3f(0, 0, -1.f)), movement_speed(SPEED), mouseSensivity(SENSIVITY), zoom(ZOOM)
 {
 	this->pos = pos;
 	this->worldUp = up;
@@ -71,89 +151,7 @@ void PerspectiveCamera::update()
 	front.y = sin(radians(pitch));
 	front.z = sin(radians(yaw)) * cos(radians(pitch));
 	this->front = front.normalized();
-	
-	this->right = vec3f::cross(this->front, this->worldUp).normalized();  
+
+	this->right = vec3f::cross(this->front, this->worldUp).normalized();
 	this->up = vec3f::cross(this->right, this->front).normalized();
-}
-
-			/*PLAYER*/
-
-PlayerCamera::PlayerCamera(Player &player)
-	: player(player)
-{
-	player.camera = this;
-}
-
-void PlayerCamera::calc_zoom()
-{
-	float zoom_level = mouse_wheel_delta;
-	distance_from_player -= zoom_level;
-	mouse_wheel_delta = 0;
-}
-
-void PlayerCamera::calc_pitch()
-{
-	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
-	{
-		//calc degree angle player to camera
-		float pitch_change = mouse_y_delta;
-		pitch += pitch_change;
-		mouse_y_delta = 0; //reset
-	}
-}
-
-void PlayerCamera::calc_angle_around_player()
-{
-	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
-	{
-		//vertical
-		float angle_chagne = mouse_x_delta;
-		angle_around_player -= angle_chagne;
-		mouse_x_delta = 0;
-	}
-}
-
-void PlayerCamera::calc_camera_position(float hori_distance, float vert_distance)
-{
-	//get y rotation theta
-	float theta_rotation = player.get_rot_y() + angle_around_player;
-	float x_offset = hori_distance * sin(radians(theta_rotation));
-	float z_offset = hori_distance * cos(radians(theta_rotation));
-	m_position.x = player.position().x - x_offset;		//invert from player
-	m_position.y = player.position().y + vert_distance;	// y doset not need
-	m_position.z = player.position().z - z_offset;
-}
-
-void PlayerCamera::move()
-{
-	// 1 .calc zom
-	calc_zoom();
-	calc_pitch();
-	calc_angle_around_player();
-	float horicontal_distance = distance_from_player * cos(radians(pitch));
-	float vertical_distance = distance_from_player * sin(radians(pitch));
-	calc_camera_position(horicontal_distance, vertical_distance);
-	yaw = 180 - (player.get_rot_y() + angle_around_player);
-}
-
-Matrix4x4 PlayerCamera::get_view_matirx()
-{
-	//player Camera view matrix
-	Matrix4x4 view;
-	view.rotate(AXIS::X, get_pitch());
-	view.rotate(AXIS::Y, get_yaw());
-	view.translate(-position());
-	return view;
-}
-
-//input
-void PlayerCamera::mouse_wheel(int delta)
-{
-	mouse_wheel_delta = delta;
-}
-
-void PlayerCamera::mouse_move(int x, int y)
-{
-	mouse_x_delta = 0.3 * x;
-	mouse_y_delta = 0.3 * y;
 }

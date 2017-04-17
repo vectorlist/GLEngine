@@ -27,7 +27,7 @@ int main(int args, char* argv[])
 	Renderer renderer;
 
 	Model model(DIR_MODEL"boxman/boxman.obj", DIR_MODEL"boxman/boxman.jpg");
-	Player p(model,vec3f(0,100,0),0,0,0,1.f);
+	Player p(model,vec3f(0,0,0),0,0,0,1.f);
 	PlayerCamera camera(p);
 
 	renderer.setRenderMode(RENDER_FORWARD);
@@ -35,7 +35,7 @@ int main(int args, char* argv[])
 	Initializer::initScene(renderer);
 	Initializer::initTextures(renderer);
 
-	app.run(&renderer);
+	app.run(renderer);
 	
 	return 0;
 }

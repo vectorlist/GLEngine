@@ -4,6 +4,7 @@
 #include <camera.h>
 #include <text.h>
 #include <terrain.h>
+#include <player.h>
 
 Renderer::Renderer()
 	: AbstractRenderer()
@@ -82,7 +83,7 @@ void Renderer::init_view_matrix()
 		glUseProgram(program);
 		//set matrix
 		Shader::setUniformMatrix4f(program, projection.proj, "proj", true);
-		Shader::setUniformMatrix4f(program, camera->get_view_matirx(), "view", true);
+		Shader::setUniformMatrix4f(program, camera->viewMatrix(), "view", true);
 	}
 	//unbind shader
 	glUseProgram(0);
@@ -92,7 +93,7 @@ void Renderer::update_view_matrix()
 {
 	for (auto program : shaders) {
 		glUseProgram(program);
-		Shader::setUniformMatrix4f(program, camera->get_view_matirx(), "view", true);
+		Shader::setUniformMatrix4f(program, camera->viewMatrix(), "view", true);
 	}
 	glUseProgram(0);
 }
@@ -238,12 +239,22 @@ void Renderer::render_text()
 		if (!text->enable) continue;
 
 		text->render(shader, std::string("Mode : ").append(mode_string),20,20,1,vec3f(1,1,1));
-		text->render(shader, std::string("Fps : ").append(std::to_string(fps)), 20, 40, 1, vec3f(1, 1, 1));
-		text->render(shader, std::string("Position : ")
+		text->render(shader, std::string("FPS : ").append(std::to_string(fps)), 20, 40, 1, vec3f(1, 1, 1));
+		text->render(shader, std::string("Camera Position : ")
 			.append(std::to_string(camera->position().x)).append(", ")
 			.append(std::to_string(camera->position().y)).append(", ")
 			.append(std::to_string(camera->position().z)),
 			20, 60, 1, vec3f(1, 1, 1));
+
+		auto x = std::to_string(camera->player().position().x);
+		auto y = std::to_string(camera->player().position().y);
+		auto z = std::to_string(camera->player().position().z);
+		auto h = std::to_string(height_terrain);
+		text->render(shader, std::string("Player Posotion : ")
+			.append(x).append(", ")
+			.append(y).append(", ").append(z), 20, 80, 1, vec3f(1, 1, 1));
+		text->render(shader, std::string("Height Terrain : ").append(h), 20, 100, 1, vec3f(1, 1, 1));
+		
 
 	}
 	glUseProgram(NULL);

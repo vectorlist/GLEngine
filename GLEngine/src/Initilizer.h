@@ -28,21 +28,21 @@ inline void Initializer::initScene(Renderer &renderer)
 	//auto m0 = model_ptr(new Model(DIR_MODEL"box.obj"));
 	//renderer << m0;
 
-	/*auto t0 = terrain_ptr(new Terrain(-1, 0, DIR_TEXTURE"glass.jpg",
+	auto t0 = terrain_ptr(new Terrain(-1, 0, DIR_TEXTURE"glass.jpg",
 		DIR_HEIGHT"height_map_64_t.jpg"));
 	auto t1 = terrain_ptr(new Terrain(0, 0, DIR_TEXTURE"desert_diffuse.jpg",
 		DIR_HEIGHT"height_map_64_t.jpg"));
 
 	auto t2 = terrain_ptr(new Terrain(0, -1, DIR_TEXTURE"dirt01.jpg",
 		DIR_HEIGHT"height_map_64_t.jpg"));
-	auto t3 = terrain_ptr(new Terrain(-1, -1, DIR_TEXTURE"glass.jpg",
-	DIR_HEIGHT"height_map_64_t.jpg"));*/
+	auto t3 = terrain_ptr(new Terrain(-1, -1, DIR_TEXTURE_TERRAIN"desert01.jpg",
+	DIR_HEIGHT"height_map_64_t.jpg"));
 	//test flat
-	auto t0 = terrain_ptr(new Terrain(-1, 0, DIR_TEXTURE"glass.jpg"));
+	/*auto t0 = terrain_ptr(new Terrain(-1, 0, DIR_TEXTURE"glass.jpg"));
 	auto t1 = terrain_ptr(new Terrain(0, 0, DIR_TEXTURE"desert_diffuse.jpg"));
 
 	auto t2 = terrain_ptr(new Terrain(0, -1, DIR_TEXTURE"dirt01.jpg"));
-	auto t3 = terrain_ptr(new Terrain(-1, -1, DIR_TEXTURE"glass.jpg"));
+	auto t3 = terrain_ptr(new Terrain(-1, -1, DIR_TEXTURE"glass.jpg"));*/
 	renderer << t0 << t1 << t2 << t3;
 
 	renderer.shaders[SHADER_FORWARD] = Shader::load(DIR_SHADER"forwards.vert", DIR_SHADER"forwards.frag");

@@ -19,6 +19,7 @@
 #define DIR_DATA				"../data/"
 #define DIR_SHADER				"../data/shader/"
 #define DIR_TEXTURE				"../data/texture/"
+#define DIR_TEXTURE_TERRAIN		"../data/texture/terrain/"
 #define DIR_HEIGHT				"../data/texture/height/"
 #define DIR_MODEL				"../data/model/"
 #define DIR_TEXT				"../data/text/"

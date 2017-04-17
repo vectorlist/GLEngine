@@ -21,7 +21,7 @@ public:
 
 	bool buildWindow();
 	//main loop
-	void run(Renderer *renderer);
+	void run(Renderer &renderer);
 
 	//get frame time
 	static TimePoint last_frame_time;
