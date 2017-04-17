@@ -59,7 +59,7 @@ void Player::moveProcess(const Terrain &terrain)
 	debug_height = terrain.getHeightOfTerrain(position().x, position().z);
 	//LOG << "collision height : " << collision_height<< ENDL;
 	//check player pos.y and collision height
-	if (position().y < debug_height || position().y == 0) {
+	if (position().y < debug_height) {
 		currentUpwardSpeed = 0;
 		on_air = false;
 		position().y = debug_height;

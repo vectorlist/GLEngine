@@ -74,12 +74,9 @@ void Renderer::init_view_matrix()
 	
 	for (auto program : shaders)
 	{
-		//text shader dont need to view mat
+		//text shader dont need to proj/view mat
 		if (program == shaders[SHADER_TEXT]) continue;
-		if (program == shaders[SHADER_PLAYER])
-		{
-			LOG << "add player shader uniforms" << ENDL;
-		}
+		
 		glUseProgram(program);
 		//set matrix
 		Shader::setUniformMatrix4f(program, projection.proj, "proj", true);
