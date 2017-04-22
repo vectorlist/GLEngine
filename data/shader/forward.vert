@@ -1,47 +1,40 @@
 
 
-#version 450 core
+#version 430 core
   
 layout (location = 0) in vec3 position;
 layout (location = 1) in vec3 normal;
 layout (location = 2) in vec2 st;
 layout (location = 3) in vec3 tangent;
+layout (location = 4) in vec3 bitangent;
 
-//frame
-uniform int frame;
-out float outFrame;
+out vec2 fragST;
+out vec3 fragNormal;
+out vec3 fragLightPos;
+out float fragVisibility;
+out vec3 fragCamera;
 
 uniform mat4 proj;
 uniform mat4 view;
 uniform mat4 model;
-uniform float texIndex;
+uniform vec3 lightPos;
 
-out vec3 outPos;
-out vec3 outNormal;
-out vec2 outCoords;
-out mat3 TBNview;
-out float texindex;
+const float density = 0.0035f;
+const float gradient = 5.0f;
 
 void main()
 {
-    
-    outNormal = normal;
-    float f = sin(frame * 0.02) * .3;
-    vec3 newPos = position + vec3(0,0,f);
-    outPos = vec3(view * model * vec4(newPos, 1.0f));
-    gl_Position = proj * vec4(outPos, 1.0);
-    
-    //TBN to world
-    vec3 T = normalize(vec3(model * vec4(tangent, 0.0)));
-    vec3 N = normalize(vec3(model * vec4(normal, 0.0)));
-    T = normalize(T - dot(T,N) * N);
-    vec3 B = cross(N, T);
-    //to frag
-    //i dont get it need to inverse or not
-    TBNview = transpose(inverse(mat3(view * model))) * mat3(T, B, N);
-    
-    //Passive
-    outCoords = st;
-    outFrame = frame;
-    texindex = texIndex;
+    vec4 world = model * vec4(position,1.0);
+
+    vec4 positionRelativeToCam = view * world;
+    gl_Position = proj * positionRelativeToCam;
+    fragNormal = (model * vec4(normal,0)).xyz;
+    fragLightPos = lightPos - world.xyz;
+    fragST = st;
+    fragCamera = (inverse(view) * vec4(0,0,0,1)).xyz - world.xyz;
+
+    float distance = length(positionRelativeToCam.xyz);
+
+    fragVisibility = exp(-pow(distance * density, gradient));
+    fragVisibility = clamp(fragVisibility, 0.0, 1.0);
 }

@@ -90,8 +90,8 @@ namespace Input
 			renderer.isRunninig = false;
 			break;
 		case SDLK_F5:
-			renderer.init_view_matrix();
-			renderer.updateAllShader();
+			//renderer << model_ptr(new Model(DIR_MODEL"box.obj"));
+			renderer.rebuildShaders();
 			break;
 		/*case SDLK_w:
 			renderer.current_camera()->process_keyboard(FORWARD, 3.f);

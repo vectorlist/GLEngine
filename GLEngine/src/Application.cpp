@@ -3,6 +3,7 @@
 #include <Performance.h>
 #include <Camera.h>
 #include <player.h>
+#include <loadmanager.h>
 
 TimePoint Application::last_frame_time;
 Seconds Application::delta;
@@ -23,9 +24,7 @@ Application::~Application()
 bool Application::buildWindow()
 {
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-	//IMG_Init(IMG_INIT_PNG);
-	//IMG_Init(IMG_INIT_JPG);
-	//
+
 	window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		width, height, SDL_WINDOW_OPENGL);
 
@@ -61,48 +60,52 @@ void Application::contextInfo()
 {
 	GLint  frag_block;
 	glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &frag_block);
+	auto device = glGetString(GL_RENDERER);
+	auto glsl = glGetString(GL_SHADING_LANGUAGE_VERSION);
+	GLint max_buffer_size;
+	glGetIntegerv(GL_MAX_ELEMENTS_VERTICES, &max_buffer_size);
 
-	auto vendor = glGetString(GL_VENDOR);
-	auto r = glGetString(GL_RENDERER);
-	//auto extension = glGetString(GL_EXTENSIONS);
-	auto glsl_version = glGetString(GL_SHADING_LANGUAGE_VERSION);
-
-
-	LOG << "Video Device	           : " << r << ENDL;
-	LOG << "GLSL Version               : " << glsl_version << ENDL;
+	max_buffer_size = max_buffer_size * sizeof(float);
+	LOG << "Video Device	           : " << device << ENDL;
+	LOG << "GLSL Version               : " << glsl << ENDL;
 	LOG << "Max Fragment Uniform Block : " << frag_block << ENDL;
-	
-
+	LOG << "Max Vertex buffer size     : " << max_buffer_size << ENDL;
 }
 
-void Application::run(Renderer &renderer)
+void Application::run(Renderer &renderer, TerrainRenderer &terrainRednerer)
 {
 	
 
 	renderer.initialize();					//clear color and setting
 	renderer.resize(width, height);			//for viewport
-	renderer.init_view_matrix();				//update uniform to all shader
+	renderer.initUniforms();				//update uniform to all shader
 	renderer.isRunninig = true;
 
-	PlayerCamera& camera = *renderer.camera;
+	Camera& camera = *renderer.camera;
 	Player& player = camera.player();
 
 	while (renderer.isRunninig)
 	{
 	
 		Performance::begin(Counter_Type::FPS);
-		//Input::event(*renderer);	//event hanler
+		/*--------------- EVENT --------------------*/
 		Input::playerEvent(renderer);
 		
-		//player movement and get terrain id and terrain height
+		
+		/*--------------- MOVEMENT -----------------*/
 		player.moveProcess(renderer.terrains);
+		camera.moveProcess();
 		renderer.terrain_height = player.debug_height;
 		renderer.terrain_id = player.debug_terrain_id;
-		camera.moveProcess();
-
-		renderer.render();					//render each
-		player.render(renderer);
 		
+		/*-------------- RENDER -------------------*/
+		renderer.render();								//render forwar entities
+		terrainRednerer.shader = renderer.terrainShader.get();
+		terrainRednerer.Render(renderer.terrains);		//render terrtains
+		
+
+		renderer.renderText();
+		/*------------ RESET SWAPCHAIN ------------*/
 		swap_update();						//set global frame time and swap window buffer
 		Performance::end(Counter_Type::FPS);
 		renderer.fps = Performance::get_fps(Counter_Type::FPS);
@@ -113,7 +116,6 @@ void Application::run(Renderer &renderer)
 
 void Application::releaseWindow()
 {
-	//IMG_Quit();
 	SDL_GL_DeleteContext(context);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

@@ -1,64 +1,57 @@
 
-#version 450 core
+#version 430 core
 
-in vec3 inColor;
+uniform sampler2D textureDiffuse;
 
-uniform sampler2D diffuse_map;
-uniform sampler2D normal_map;
+out vec4 outColor;
+uniform vec3 lightColor;
+uniform vec3 skyColor;
 
+in float fragVisibility;
+in vec3 fragNormal;
+in vec3 fragLightPos;
+in vec3 fragCamera;
+in vec2 fragST;
 
-//from vert
-in vec3 outPos;
-in vec2 outCoords;
-in mat3 TBNview;
-in vec3 outNormal;
-in float outFrame;
-in float texindex;
-out vec4 fragColor;
-
-
-vec3 testShading(vec3 light, vec3 normal)
-{
-    float distance = length(light - outPos);
-    vec3 lightDir = normalize(light - outPos);
-    
-    float d = max(dot(normalize(normal),lightDir),0.0);
-    //invert lightDir
-    
-    vec3 ref = normalize(reflect(-lightDir, normal));
-    vec3 viewDir = normalize(-outPos);
-    
-    //view dot reflect
-    float vr = dot(viewDir, ref);
-    float shine = 1000;
-    float p = pow(max(vr,0.0), shine);
-    //vec3 spec = p * vec3(1);
-    
-    return  d * vec3(texture(diffuse_map, outCoords));
-}
 
 void main()
 {
-    float f = abs(sin(outFrame * 0.01)) * 10;
-    vec3 lightPos = vec3(3,2+f,3);
-    vec3 outColor = inColor;
-    vec3 normal = texture(normal_map, outCoords).rgb;
-    vec3 base = 0.05 * texture(diffuse_map, outCoords).rgb;
-    //tangent normal
-    vec3 tbn = normalize(TBNview *(normal * 2.0 - vec3(1.0)));
+    vec4 textureColor = texture(textureDiffuse, fragST);
     
-    //base *= testShading(lightPos, tbn);
-    vec3 result;
-    if(texindex < 0){
-	result = texture(diffuse_map, outCoords).rgb;
-    }
-    else if(texindex < 0.9){
-	base += testShading(lightPos, tbn);
-	result = base;
-    }
-    else if(texindex < 1.9 && texindex > 0.9){
-	result = texture(normal_map, outCoords).rgb * testShading(lightPos, outNormal);
-    }
+    vec3 unitNormal = normalize(fragNormal);
+    vec3 unitVectorToCamera = normalize(fragCamera);
+
+    vec3 totalDiffuse = vec3(0.0);
+    vec3 totalSpecular = vec3(0.0);
+
+    //DIFFUSE
+    vec3 attenuation = vec3(0,5,0);
+    float distance = length(fragLightPos);
+    float attfactor = attenuation.x + attenuation.y * distance + attenuation.z *
+    distance * distance;
+
+    vec3 unitLightVector = normalize(fragLightPos);
+    float NdotL = dot(unitNormal , unitLightVector);
+    float brightness = max(NdotL, 0.0f);
+    vec3 lightDir = -unitLightVector;
+    vec3 reflectedLightDir = reflect(lightDir, unitNormal);
     
-    fragColor = vec4(vec3(1,0,0),1);
+    //SPECULAR
+    float specularFactor = dot(reflectedLightDir, unitVectorToCamera);
+    specularFactor = max(specularFactor, 0.0);
+
+    float shininess = 4;
+    float reflectivity = 30.0f;
+    float dampedFactor = pow(specularFactor, shininess);
+
+    vec3 diffuse = brightness * lightColor/attfactor;
+    totalDiffuse += diffuse;
+    vec3 specular = dampedFactor * reflectivity * lightColor / attfactor;
+    totalSpecular += specular;
+
+    totalDiffuse = max(totalDiffuse, 0.4);
+    
+    outColor = vec4(totalDiffuse,1) * textureColor + vec4(totalSpecular,1);
+
+    outColor = mix(vec4(skyColor, 1.0), outColor, fragVisibility);
 }

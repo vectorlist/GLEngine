@@ -46,14 +46,7 @@ void Light::initLightUniform(std::vector<GLuint> &shaders)
 void Light::setLight()
 {
 
-	/*for (int i = 0; i < LIGHT_MAX_NUM; ++i)
-	{
-		ubo_lights[i].position = vec3f(0, 5, 0);
-		ubo_lights[i].color = vec3f(std::fabs(i << 8), std::fabs(i << 8), std::fabs(i << 8));
-		ubo_lights[i].intensity = 0.8;
-	}*/
-
-	ubo_lights[0].position = vec3f(10, 3, 0);
+	/*ubo_lights[0].position = vec3f(10, 3, 0);
 	ubo_lights[0].color = vec3f(1, 0, 0);
 	ubo_lights[0].intensity = 0.8;
 
@@ -63,7 +56,7 @@ void Light::setLight()
 
 	ubo_lights[2].position = vec3f(10, 3, 10);
 	ubo_lights[2].color = vec3f(0, 0, 1);
-	ubo_lights[2].intensity = 0.8;
+	ubo_lights[2].intensity = 0.8;*/
 }
 
 void Light::debug_bindUniform()

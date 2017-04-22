@@ -28,6 +28,15 @@
     <Filter Include="src\Player">
       <UniqueIdentifier>{ffb91fed-5b1f-458d-8b13-b6ae947288a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Shader">
+      <UniqueIdentifier>{44c1e063-7861-4753-9d16-64425ad2885f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Terrain">
+      <UniqueIdentifier>{789b4bed-c55d-4f3d-86b7-14fcb2f12856}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Model">
+      <UniqueIdentifier>{45f8d919-9aec-4ab7-88bf-21923240a7dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Input.cpp">
@@ -35,18 +44,6 @@
     </ClCompile>
     <ClCompile Include="src\Application.cpp">
       <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Model.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Shader.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Mesh.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Texture.cpp">
-      <Filter>src\Map</Filter>
     </ClCompile>
     <ClCompile Include="src\Camera.cpp">
       <Filter>src</Filter>
@@ -56,9 +53,6 @@
     </ClCompile>
     <ClCompile Include="src\text.cpp">
       <Filter>src\Map</Filter>
-    </ClCompile>
-    <ClCompile Include="src\terrain.cpp">
-      <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
@@ -75,6 +69,39 @@
     <ClCompile Include="src\light.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\terrain.cpp">
+      <Filter>src\Terrain</Filter>
+    </ClCompile>
+    <ClCompile Include="src\texture.cpp">
+      <Filter>src\Map</Filter>
+    </ClCompile>
+    <ClCompile Include="src\loadmanager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mesh.cpp">
+      <Filter>src\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\model.cpp">
+      <Filter>src\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>src\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\forwardshader.cpp">
+      <Filter>src\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\terrainrenderer.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\terrainshader.cpp">
+      <Filter>src\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EnvironmentRenderer.cpp">
+      <Filter>src\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skyshader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\config.h">
@@ -85,18 +112,6 @@
     </ClInclude>
     <ClInclude Include="src\Application.h">
       <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Model.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Shader.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Mesh.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Texture.h">
-      <Filter>src\Map</Filter>
     </ClInclude>
     <ClInclude Include="src\Initilizer.h">
       <Filter>src</Filter>
@@ -112,9 +127,6 @@
     </ClInclude>
     <ClInclude Include="src\text.h">
       <Filter>src\Map</Filter>
-    </ClInclude>
-    <ClInclude Include="src\main.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\core\vec3f.h">
       <Filter>core</Filter>
@@ -134,9 +146,6 @@
     <ClInclude Include="..\include\core\vec2f.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="src\terrain.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer.h">
       <Filter>src\Renderer</Filter>
     </ClInclude>
@@ -151,6 +160,42 @@
     </ClInclude>
     <ClInclude Include="src\light.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadertool.h">
+      <Filter>src\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shader.h">
+      <Filter>src\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrain.h">
+      <Filter>src\Terrain</Filter>
+    </ClInclude>
+    <ClInclude Include="src\texture.h">
+      <Filter>src\Map</Filter>
+    </ClInclude>
+    <ClInclude Include="src\loadmanager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mesh.h">
+      <Filter>src\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\model.h">
+      <Filter>src\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="src\forwardshader.h">
+      <Filter>src\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrainrenderer.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\terrainshader.h">
+      <Filter>src\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EnvironmentRenderer.h">
+      <Filter>src\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\skyshader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

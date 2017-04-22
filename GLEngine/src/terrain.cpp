@@ -1,26 +1,35 @@
-
-
 #include <terrain.h>
 #include <cstdio>
 #include <cmath>
 #include <vector>
 
-Terrain::Terrain(float x, float z,const std::string &texture_path, std::string height_map_path)
-	: relative_x(x * TERRAIN_SIZE), relative_z(z * TERRAIN_SIZE)
-{
+#define		TERRAIN_SIZE  800.f
+#define		TERRAIN_FLAT_VERTEX_SIZE		128
+#define		MAX_HEIGHT  40.0f
+#define		MAX_PIXEL_COLOR  16777216.0f
+#define		MAX_PIXEL_COLOR_RGB 256 * 256 * 256
 
-	if (height_map_path.length())
-		//height map terrain
-		mesh = generateTerrain(texture_path, height_map_path);
+Terrain::Terrain(const TerrainCreateInfo &info)
+	: relative_x(info.x * TERRAIN_SIZE), relative_z(info.z * TERRAIN_SIZE),
+	textures(info.textures)
+{
+	if (info.heightFilePath.length())
+		mesh = generateTerrain(info.heightFilePath);
 	else
-		//flat terrain
-		mesh = generateFlatTerrain(texture_path);
-	
-	//set to terrain matrix per translate * SIZE
+		mesh = generateFlatTerrain();
+
+
 	matrix.translate(get_relative_pos());
 }
-Mesh Terrain::generateTerrain(const std::string &texture_path, const std::string& height_map_path) {
-	
+
+Terrain::~Terrain()
+{
+	if (mesh)
+		delete mesh;
+}
+
+Mesh* Terrain::generateTerrain(const std::string& height_map_path)
+{
 	SDL_Surface* map = IMG_Load(height_map_path.c_str());
 	if (!map) {
 		std::string err = "failed to load height map : ";
@@ -79,10 +88,10 @@ Mesh Terrain::generateTerrain(const std::string &texture_path, const std::string
 			indices[pointer++] = bottomRight;
 		}
 	}
-	return Mesh(vertices, indices, texture_path);
+	return new Mesh(vertices, indices);
 }
 
-Mesh Terrain::generateFlatTerrain(const std::string &texture_path)
+Mesh* Terrain::generateFlatTerrain()
 {
 
 	int count = TERRAIN_FLAT_VERTEX_SIZE * TERRAIN_FLAT_VERTEX_SIZE;
@@ -129,58 +138,21 @@ Mesh Terrain::generateFlatTerrain(const std::string &texture_path)
 			indices[pointer++] = bottomRight;
 		}
 	}
-	return Mesh(vertices, indices, texture_path);
+	return new Mesh(vertices, indices);
 }
 
 float Terrain::getHeightOfTerrain(float worldX, float worldZ) const
 {
-	/*float terrain_x = worldX - relative_x;
-	float terrain_z = worldZ - relative_z;
-	float grid_square_size = TERRAIN_SIZE / (float)(heights.size() - 1);
-	int grid_x = std::floor(terrain_x / grid_square_size);
-	int grid_z = std::floor(terrain_z / grid_square_size);
-	if (grid_x > heights.size() - 1 || grid_z > heights.size() - 1 ||
-		grid_x < 0 || grid_z < 0) {
-		return 0;
-	}
-
-	float x_coord = std::fmod(terrain_x, grid_square_size) / grid_square_size;
-	float z_coord = std::fmod(terrain_z, grid_square_size) / grid_square_size;
-	float answer = 0.0f;
-
-	if (x_coord <= (1 - z_coord)) {
-		answer = barryCentric(
-			vec3f{ 0, heights[grid_x][grid_z], 0 },
-			vec3f{ 1, heights[grid_x + 1][grid_z], 0 },
-			vec3f{ 0, heights[grid_x][grid_z + 1], 1 },
-			vec2f{ x_coord, z_coord });
-	}
-	else {
-		answer = barryCentric(
-			vec3f{ 0, heights[grid_x + 1][grid_z], 0 },
-			vec3f{ 1, heights[grid_x + 1][grid_z + 1], 1 },
-			vec3f{ 0, heights[grid_x][grid_z + 1], 1 },
-			vec2f{ x_coord, z_coord });
-	}
-
-	return answer;*/
-
 	float terrainX = worldX - relative_x;
 	float terrainZ = worldZ - relative_z;
 	float gridSquareSize = TERRAIN_SIZE / (float)(heights.size() - 1);
 	int gridX = std::floor(terrainX / gridSquareSize);
 	int gridZ = std::floor(terrainZ / gridSquareSize);
-	/*if (gridX > heights.size() - 1 || gridZ > heights.size() - 1 ||
-		gridX < 0 || gridZ <0)*/
 	if(gridX < 0 || gridX + 1 >= (int)heights.size() || gridZ < 0 ||
 		gridZ + 1 >= (int)heights.size())
 	{
 		return 0.0f;
 	}
-
-	//if (gridX == 255) gridX -= 1;
-	//if (gridZ == 255) gridZ -= 1;
-	//if (1) return 0;
 	float xCoord = fmod(terrainX, gridSquareSize) / gridSquareSize;
 	float zCoord = fmod(terrainZ, gridSquareSize) / gridSquareSize;
 	float height = 0.f;
@@ -228,7 +200,7 @@ float Terrain::get_height(unsigned int x, unsigned int z, SDL_Surface* map)
 	uint32_t rgb = (r << 16) + (g << 8) + b;
 	
 	double value = rgb;
-	value /= (max_pixel_colour / 2);
+	value /= (MAX_PIXEL_COLOR_RGB / 2);
 	value -= 1.0;
 	value *= MAX_HEIGHT;
 

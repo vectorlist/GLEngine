@@ -1,12 +1,13 @@
 #pragma once
 
-#include <config.h>
+#include <abstractrenderer.h>
 #include <vector>
 #include <Mesh.h>
-#include <abstractrenderer.h>
 #include <light.h>
+#include <forwardshader.h>
+#include <terrainshader.h>
 
-class PlayerCamera;
+class Camera;
 class Renderer : public AbstractRenderer
 {
 public:
@@ -14,46 +15,54 @@ public:
 	~Renderer();
 
 	//condition
-	bool isRunninig = false;
 
 	//---------- pass OpenGL func  ----------
 	void initialize();
 	void render();
 	void resize(uint32_t width, uint32_t height);
-	//------------ View Matrix Camera for shaders ----------
-	void init_view_matrix();
-	void update_view_matrix();
+	void renderText();
+	
+	//Light uniform_light;
+	//TODO : replace to UBO
+	UBOLight light;
+	std::shared_ptr<ForwardShader> forwardShader;
+	std::shared_ptr<TerrainShader> terrainShader;
 
-	struct 
-	{
-		Matrix4x4 proj;
-		Matrix4x4 text;
-	}projection;
+	camera_ptr camera;
+	player_ptr player;
 
-	//test mix texture
-	struct
-	{
-		Texture* terrain01;
-		Texture* terrain02;
+	void initUniforms();
+	void updateUniforms();
+	void rebuildShaders();
 
-	}textures;
-
-	//test uniform lights
-	Light uniform_light;
-
-
-	PlayerCamera* camera;
-
+	//Renderer
+	
 private:
 	//redner mode
-	void render_forward();
-	void render_terrian();
-	void render_flat();
+	void renderEntities();
 
-	void render_text();
 
 };
 
 
 
+inline void Renderer::rebuildShaders()
+{
+	LOG << "rebuild shaders..." << ENDL;
+	forwardShader.reset();
+	terrainShader.reset();
 
+	if (!forwardShader) {
+		forwardShader =
+			std::make_shared<ForwardShader>
+			(DIR_SHADER"forward.vert", DIR_SHADER"forward.frag");
+	}
+		
+	if (!terrainShader) {
+		terrainShader =
+			std::make_shared<TerrainShader>
+			(DIR_SHADER"terrain.vert", DIR_SHADER"terrain.frag");
+	}
+	
+	initUniforms();
+}

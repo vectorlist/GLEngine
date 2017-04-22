@@ -4,6 +4,9 @@
 #include <Windows.h>
 #include <assert.h>
 
+#define LOG						std::cout
+#define ENDL					std::endl
+
 #define LOG_ERROR(x)				Log::log_error(x)
 #define LOG_SHADER_ERROR(x,xx)		Log::log_shader_error(x,xx)
 
@@ -19,7 +22,8 @@ namespace Log
 	{
 		std::string err = path;
 		err.append(" : ").append(msg);
+		LOG << err.c_str() << ENDL;
 		MessageBox(NULL, err.c_str(), "Error", MB_OK);
-		assert(0 && msg.c_str());
+		//assert(0 && msg.c_str());
 	}
 }

@@ -2,13 +2,13 @@
 #include <SDL2/SDL_keyboard.h>
 #include <SDL2/SDL.h>
 
-PlayerCamera::PlayerCamera(Player &player)
+Camera::Camera(Player &player)
 	: m_player(player)
 {
 	player.setCamera(*this);
 }
 
-void PlayerCamera::moveProcess()
+void Camera::moveProcess()
 {
 	calcZoom();
 	calcPitch();
@@ -16,17 +16,17 @@ void PlayerCamera::moveProcess()
 	float H_distance = distanceFromPlayer * cos(radians(m_pitch));
 	float V_distance = distanceFromPlayer * sin(radians(m_pitch));
 	calcPosition(H_distance, V_distance);
-	m_yaw = 180 - (m_player.rotY() + angleAroundPlayer);
+	m_yaw = 180 - (m_player.ry() + angleAroundPlayer);
 }
 
-void PlayerCamera::calcZoom()
+void Camera::calcZoom()
 {
 	float zoom_level = mouse_wheel_delta;
 	distanceFromPlayer -= zoom_level;
 	mouse_wheel_delta = 0;
 }
 
-void PlayerCamera::calcPitch()
+void Camera::calcPitch()
 {
 	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
 	{
@@ -36,7 +36,7 @@ void PlayerCamera::calcPitch()
 	}
 }
 
-void PlayerCamera::calcAngle()
+void Camera::calcAngle()
 {
 	if (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON_LMASK)
 	{
@@ -47,10 +47,10 @@ void PlayerCamera::calcAngle()
 	}
 }
 
-void PlayerCamera::calcPosition(float hori_distance, float vert_distance)
+void Camera::calcPosition(float hori_distance, float vert_distance)
 {
 	//get y rotation theta
-	float theta_rotation = m_player.rotY() + angleAroundPlayer;
+	float theta_rotation = m_player.ry() + angleAroundPlayer;
 	float x_offset = hori_distance * sin(radians(theta_rotation));
 	float z_offset = hori_distance * cos(radians(theta_rotation));
 	m_position.x = m_player.position().x - x_offset;		//invert from player
@@ -58,7 +58,7 @@ void PlayerCamera::calcPosition(float hori_distance, float vert_distance)
 	m_position.z = m_player.position().z - z_offset;
 }
 
-Matrix4x4 PlayerCamera::viewMatrix()
+Matrix4x4 Camera::viewMatrix()
 {
 	//player Camera view matrix
 	Matrix4x4 view;
@@ -69,89 +69,15 @@ Matrix4x4 PlayerCamera::viewMatrix()
 	return view;
 }
 
-void PlayerCamera::mouseMoveEvent(int x, int y)
+void Camera::mouseMoveEvent(int x, int y)
 {
 	mouse_x_delta = 0.3 * x;
 	mouse_y_delta = 0.3 * y;
 }
 
 
-void PlayerCamera::mouseWheelEvent(int delta)
+void Camera::mouseWheelEvent(int delta)
 {
 	mouse_wheel_delta = delta;
 }
 
-//----------------- PERSPECTIVE CAMERA ---------------------
-
-PerspectiveCamera::PerspectiveCamera(vec3f pos, vec3f up, float yaw, float pitch)
-	: front(vec3f(0, 0, -1.f)), movement_speed(SPEED), mouseSensivity(SENSIVITY), zoom(ZOOM)
-{
-	this->pos = pos;
-	this->worldUp = up;
-	this->yaw = yaw;
-	this->pitch = pitch;
-	update();
-}
-
-
-PerspectiveCamera::~PerspectiveCamera()
-{
-}
-
-Matrix4x4 PerspectiveCamera::view()
-{
-	return vml::lookAt(pos, pos + front, up);
-}
-
-void PerspectiveCamera::process_keyboard(Camera_Movement direction, float deltaTime)
-{
-	float velocity = this->movement_speed * deltaTime;
-	if (direction == FORWARD)
-		this->pos += this->front * velocity;
-	if (direction == BACKWARD)
-		this->pos -= this->front * velocity;
-	if (direction == LEFT)
-		this->pos -= this->right * velocity;
-	if (direction == RIGHT)
-		this->pos += this->right * velocity;
-}
-
-void PerspectiveCamera::process_mouse_movement(float xoffset, float yoffset, bool constrain_pitch)
-{
-	xoffset *= this->mouseSensivity;
-	yoffset *= this->mouseSensivity;
-
-	this->yaw += xoffset;
-	this->pitch += yoffset;
-
-	if (constrain_pitch)
-	{
-		if (this->pitch > 89.0f)
-			this->pitch = 89.0f;
-		if (this->pitch < -89.0f)
-			this->pitch = -89.0f;
-	}
-	this->update();
-}
-
-void PerspectiveCamera::process_mouse_scroll(float yoffset)
-{
-	if (this->zoom >= 1.0f && this->zoom <= 45.0f)
-		this->zoom -= yoffset;
-	if (this->zoom <= 1.0f)
-		this->zoom = 1.0f;
-	if (this->zoom >= 45.0f)
-		this->zoom = 45.0f;
-}
-
-void PerspectiveCamera::update()
-{
-	vec3f front;
-	front.x = cos(radians(yaw)) * cos(radians(pitch));
-	front.y = sin(radians(pitch));
-	front.z = sin(radians(yaw)) * cos(radians(pitch));
-	this->front = front.normalized();
-
-	this->right = vec3f::cross(this->front, this->worldUp).normalized();
-	this->up = vec3f::cross(this->right, this->front).normalized();
-}

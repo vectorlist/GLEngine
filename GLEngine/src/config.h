@@ -12,9 +12,6 @@
 #include <log.h>
 #include <map>
 
-#define LOG						std::cout
-#define ENDL					std::endl
-
 //DIRS
 #define DIR_DATA				"../data/"
 #define DIR_SHADER				"../data/shader/"
@@ -23,6 +20,7 @@
 #define DIR_HEIGHT				"../data/texture/height/"
 #define DIR_MODEL				"../data/model/"
 #define DIR_TEXT				"../data/text/"
+#define DIR_CUBEMAP				"../data/texture/cubemap/"
 
 //FILES
 #define FILE_DEFAULT_DIFFUSE	DIR_TEXTURE"default_diffuse.jpg"
@@ -35,19 +33,21 @@
 //forwar declare
 
 class Model;
-class Geometry;
 class Texture;
 class PerspectiveCamera;
 class Text;
 class Terrain;
+class Player;
+class Camera;
+class Entity;
 //TODO : replace unique ptr
 
 typedef std::shared_ptr<Model> model_ptr;
-typedef std::shared_ptr<Geometry> geometry_ptr;
-typedef std::shared_ptr<PerspectiveCamera> camera_ptr;
+typedef std::shared_ptr<Camera> camera_ptr;
 typedef std::shared_ptr<Text> text_ptr;
 typedef std::shared_ptr<Terrain> terrain_ptr;
-
+typedef std::shared_ptr<Player> player_ptr;
+typedef std::shared_ptr<Entity> entity_ptr;
 //TYPE DEFINES
 enum Render_Mode
 {

@@ -7,10 +7,10 @@
 #include <Renderer.h>
 #include <player.h>
 
-class PlayerCamera
+class Camera
 {
 public:
-	PlayerCamera(Player &player);
+	Camera(Player &player);
 
 	void moveProcess();
 	void mouseMoveEvent(int x, int y);
@@ -40,48 +40,3 @@ private:
 	Player &m_player;
 };
 
-//----------------- PERSPECTIVE CAMERA ---------------------
-
-#define YAW			-90.f
-#define PITCH		0.0f
-#define SPEED		2.f
-#define SENSIVITY	0.25f
-#define ZOOM		45.f
-
-enum Camera_Movement
-{
-	FORWARD = 0,
-	BACKWARD,
-	LEFT,
-	RIGHT
-};
-
-class PerspectiveCamera
-{
-public:
-	PerspectiveCamera(vec3f pos = vec3f(0), vec3f up = vec3f(0, 1, 0),
-		float yaw = YAW, float pitch = PITCH);
-	~PerspectiveCamera();
-
-	/*SHARE FUNC*/
-
-	vec3f pos;
-	vec3f front;
-	vec3f up;
-	vec3f right;
-	vec3f worldUp;
-
-	float yaw;
-	float pitch;
-
-	float mouseSensivity;
-	float movement_speed;
-	float zoom;
-
-	Matrix4x4 view();
-	void process_keyboard(Camera_Movement direction, float deltaTime);
-	void process_mouse_movement(float xoffset, float yoffset, bool constrain_pitch = true);
-	void process_mouse_scroll(float yoffset);
-private:
-	void update();
-};

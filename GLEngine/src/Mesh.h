@@ -1,8 +1,10 @@
 #pragma once
 
-#include <config.h>
-#include <SDL2/SDL_image.h>
-#include <Texture.h>
+#include <GL/glew.h>
+#include <vec2f.h>
+#include <vec3f.h>
+#include <vector>
+#include <memory>
 struct Vertex
 {
 	vec3f pos;
@@ -12,52 +14,24 @@ struct Vertex
 	vec3f bitangent;
 };
 
-struct Maps
-{
-	Texture* diffuse = NULL;
-	Texture* normal = NULL;
-	Texture* specular = NULL;
-};
-
-#define MAP_MAX_NUM		3
-
 class Mesh
 {
 public:
-	Mesh(){}
+	Mesh();
 	Mesh(std::vector<Vertex> vertice, std::vector<uint32_t> indices);
-	Mesh(std::vector<Vertex> vertice, 
-		std::vector<uint32_t> indices,
-		const std::string &texture);
 	~Mesh();
 
-	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
 
-	GLuint vao;
-
-	Maps maps;
-
-	void build_buffers();
-
-
-	void setTexture(
-		const std::string &filename,
-		bool clamp,
-		Texture_Type type);
-
-	static Texture* loadTexture(
-		const std::string &filename,
-		bool clamp = true,
-		Texture_Type type = TEXTURE_DIFFUSE);
-
-	static std::vector<Texture*> global_textures;
+	GLuint vao = NULL;
+	uint32_t indices_size;
 	void render();
 private:
-	GLuint vbo;
-	GLuint ibo;
-public:
-	//STATICS
+	void build_buffers();
+	std::vector<Vertex> vertices;
+	std::vector<GLuint> indices;
+	GLuint vbo = NULL;
+	GLuint ibo = NULL;
 
 };
 
+typedef std::shared_ptr<Mesh> mesh_ptr;

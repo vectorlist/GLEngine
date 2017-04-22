@@ -7,7 +7,7 @@ class Entity
 {
 public:
 	Entity(
-		Model& model,
+		const Model& model,
 		const vec3f& pos,
 		float rx, float ry, float rz, float scale = 1.0f);
 
@@ -18,12 +18,12 @@ public:
 	float get_texture_offset_x();
 	float get_texture_offset_z();
 
-	Model model;
+	const Model &model;
 
 	vec3f& position()  { return m_position; }
-	float rotX() { return rot_x; }
-	float rotY() { return rot_y; }
-	float rotZ() { return rot_z; }
+	float rx() { return rot_x; }
+	float ry() { return rot_y; }
+	float rz() { return rot_z; }
 	float scale() { return m_scale; }
 
 private:
@@ -33,3 +33,5 @@ private:
 	float rot_z = 0.0f;
 	float m_scale;
 };
+
+typedef std::shared_ptr<Entity> entity_ptr;

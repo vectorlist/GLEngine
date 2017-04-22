@@ -1,111 +1,59 @@
-#include "Shader.h"
-#include <fstream>
-#include <sstream>
+#include "shader.h"
 
-GLuint Shader::load(const char * vertpath, const char * fragpath)
+Shader::Shader(const char* vert, const char* frag, const char* geo)
+	: id(ShaderTool::load(vert, frag))
 {
-	std::string vertCode = codeFromFile(vertpath);
-	std::string fragCode = codeFromFile(fragpath);
-
-	GLuint vert = compile(vertCode.c_str(), GL_VERTEX_SHADER, vertpath);
-	GLuint frag = compile(fragCode.c_str(), GL_FRAGMENT_SHADER, fragpath);
-
-	GLuint program = glCreateProgram();
-
-	glAttachShader(program, vert);
-	glAttachShader(program, frag);
-
-	glLinkProgram(program);
-
-	GLint success;
-	GLchar info_log[512];
-
-	glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(program, 512, NULL, info_log);
-		LOG_ERROR(info_log);
-	}
-
-	//we dont need shader anymore
-	glDeleteShader(vert);
-	glDeleteShader(frag);
-
-	glUseProgram(program);
-
-	return program;
-}
-
-std::string Shader::codeFromFile(const std::string &filename)
-{
-	std::string bits;
-	std::ifstream filestream(filename, std::ios::in);
-	if (!filestream.is_open())
-	{
-		std::string err = "failed to load file : ";
-		err.append(filename);
-		LOG_ERROR(err);
-	}
-	
-	std::string line = "";
-	while (!filestream.eof())
-	{
-		std::getline(filestream, line);
-		bits.append(line + "\n");
-	}
-	filestream.close();
-	return bits;
 	
 }
 
-GLuint Shader::compile(const GLchar *code, const GLenum type, const char* path)
+Shader::~Shader()
 {
-	GLint success;
-	GLchar info_log[512];
-
-	GLuint shader = glCreateShader(type);
-	glShaderSource(shader, 1, &code, NULL);
-	glCompileShader(shader);
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-
-	if (!success) {
-		glGetShaderInfoLog(shader, 512, NULL, info_log);
-		LOG_SHADER_ERROR(path,info_log);
-	}
-
-	return shader;
+	if(id != NULL)
+		glDeleteProgram(id);
 }
 
-void Shader::setUniform1i(GLuint &program, uint32_t data, const char* name)
+void Shader::bind()
 {
-	glUniform1i(glGetUniformLocation(program, name), data);
+	glUseProgram(id);
 }
 
-void Shader::setUniform1f(GLuint &program, float data, const char* name)
+void Shader::unbind()
 {
-	glUniform1f(glGetUniformLocation(program, name), data);
+	glUseProgram(0);
 }
 
-void Shader::setUniForm2i(GLuint &program, const vec2i &data, const char* name)
+GLint Shader::setUniformLocation(const char * uniformname)
 {
-	glUniform2i(glGetUniformLocation(program, name), data.x,data.y);
+	return glGetUniformLocation(id,uniformname);
 }
 
-void Shader::setUniForm2f(GLuint &program, const vec2f &data, const char* name)
+void Shader::setLocation1f(GLint location, float data) const
 {
-	glUniform2f(glGetUniformLocation(program, name), data.x, data.y);
+	glUniform1f(location, data);
 }
 
-void Shader::setUniForm3f(GLuint &program, const vec3f &data, const char* name)
+void Shader::setLocation1i(GLint location, int data) const
 {
-	glUniform3f(glGetUniformLocation(program, name), data.x, data.y, data.z);
+	glUniform1i(location, data);
 }
 
-void Shader::setUniformMatrix4f(GLuint &program, const Matrix4x4 &mat, const char* name, bool transpose)
+void Shader::setLocation2f(GLint location, const vec2f &data) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(program, name), 1, transpose, mat.constData());
+	glUniform2fv(location, 1, &data.x);
 }
 
-void Shader::load_vec3f(GLint location, const vec3f & data)
+void Shader::setLocation3f(GLint location, const vec3f &data) const
 {
-	//glUnifo
+	glUniform3fv(location, 1, &data.x);
 }
+
+void Shader::setLocation4f(GLint location, const vec4f &data) const
+{
+	glUniform4fv(location, 1, &data.x);
+}
+
+void Shader::setLocationMatrix4f(GLint location, const Matrix4x4 &data, bool transpose) const
+{
+	glUniformMatrix4fv(location, 1, transpose, data.constData());
+}
+

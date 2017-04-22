@@ -1,6 +1,6 @@
 #include "text.h"
 #include <config.h>
-#include <Shader.h>
+#include <shadertool.h>
 
 Text::Text(const std::string fontPath, uint32_t fontSize)
 	: font_path(fontPath), font_size(fontSize)
@@ -125,7 +125,7 @@ void Text::render(
 	const vec3f &color)
 {
 	
-	Shader::setUniForm3f(shader, color, "text_color");
+	ShaderTool::setUniForm3f(shader, color, "text_color");
 	//bounding vao
 	glActiveTexture(GL_TEXTURE0); //use 0 for text only
 	/*------------------- vao bounding --------------------*/

@@ -1,7 +1,7 @@
 #include "entity.h"
 
 
-Entity::Entity(Model &model, const vec3f & pos, float rx, float ry, float rz, float scale)
+Entity::Entity(const Model &model, const vec3f & pos, float rx, float ry, float rz, float scale)
 	: model(model), m_position(pos), rot_x(rx), rot_y(ry), rot_z(rz), m_scale(scale)
 {
 

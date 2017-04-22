@@ -4,6 +4,7 @@
 #include <Renderer.h>
 #include <Application.h>
 #include <Initilizer.h>
+#include <terrainshader.h>
 
 void setConsoleOutput(int x, int y, int w, int h)
 {
@@ -15,9 +16,19 @@ void setConsoleOutput(int x, int y, int w, int h)
 	MoveWindow(console, x, y, w, h, TRUE);
 }
 
-//test
-#include <main.h>
-#include <Camera.h>
+struct SomeData
+{
+	float data=0;
+};
+
+void lambda_func(SomeData& aa)
+{
+	aa.data += 1;
+	//LOG << aa.data << LOG;
+	if (aa.data > 10) return;
+	lambda_func(aa);
+	
+}
 
 int main(int args, char* argv[])
 {
@@ -25,18 +36,18 @@ int main(int args, char* argv[])
 
 	Application app("OpenGL Engine",1280,720);
 	Renderer renderer;
+	
 
-	Model model(DIR_MODEL"boxman/boxman.obj", DIR_MODEL"boxman/boxman.jpg");
-	Player p(model,vec3f(0,0,0),0,0,0,1.f);
-	PlayerCamera camera(p);
-
-	renderer.setRenderMode(RENDER_TERRIAN);
-	Initializer::initCamera(renderer, camera);
+	renderer.setRenderMode(RENDER_FORWARD);
+	Initializer::initCamera(renderer);
 	Initializer::initScene(renderer);
 	Initializer::initTextures(renderer);
 
-	app.run(renderer);
+	TerrainRenderer terrainRenderer;// (/**renderer.terrainShader*/);
 	
+
+	app.run(renderer, terrainRenderer);
+
 	return 0;
 }
 

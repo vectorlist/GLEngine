@@ -617,6 +617,17 @@ namespace vml
 #endif
 		return mat * M;
 	}
+
+	inline Matrix4x4 transform(const vec3f &pos, float rx, float ry, float rz, float scale)
+	{
+		Matrix4x4 model;
+		model.translate(pos);
+		model.rotate(AXIS::X, rx);
+		model.rotate(AXIS::Y, ry);
+		model.rotate(AXIS::Z, rz);
+		model.scale(vec3f(scale));
+		return model;
+	}
 }
 
 #endif // MATRIX4X4_H

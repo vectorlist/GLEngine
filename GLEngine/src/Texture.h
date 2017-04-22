@@ -1,7 +1,8 @@
 #pragma once
 
-#include <config.h>
-
+#include <GL/glew.h>
+#include <vector>
+#include <memory>
 #define TEXTURE_NONE UINT_MAX
 
 enum Texture_Type
@@ -16,5 +17,12 @@ struct Texture
 	GLuint id;
 	Texture_Type type;
 	std::string path;
-
 };
+
+struct CubeTexture
+{
+	GLuint id;
+	uint32_t id_index;
+};
+
+typedef std::shared_ptr<Texture> texture_ptr;

@@ -158,18 +158,24 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\entity.cpp" />
+    <ClCompile Include="src\EnvironmentRenderer.cpp" />
+    <ClCompile Include="src\forwardshader.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\light.cpp" />
+    <ClCompile Include="src\loadmanager.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\mesh.cpp" />
+    <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\Performance.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\renderer.cpp" />
-    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\skyshader.cpp" />
+    <ClCompile Include="src\terrainrenderer.cpp" />
+    <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\terrain.cpp" />
+    <ClCompile Include="src\terrainshader.cpp" />
     <ClCompile Include="src\text.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\core\color.h" />
@@ -183,20 +189,26 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\config.h" />
     <ClInclude Include="src\entity.h" />
+    <ClInclude Include="src\EnvironmentRenderer.h" />
+    <ClInclude Include="src\forwardshader.h" />
     <ClInclude Include="src\Initilizer.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\light.h" />
+    <ClInclude Include="src\loadmanager.h" />
     <ClInclude Include="src\log.h" />
-    <ClInclude Include="src\main.h" />
-    <ClInclude Include="src\Mesh.h" />
-    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\mesh.h" />
+    <ClInclude Include="src\model.h" />
     <ClInclude Include="src\Performance.h" />
     <ClInclude Include="src\player.h" />
     <ClInclude Include="src\renderer.h" />
-    <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\shader.h" />
+    <ClInclude Include="src\shadertool.h" />
+    <ClInclude Include="src\skyshader.h" />
     <ClInclude Include="src\terrain.h" />
+    <ClInclude Include="src\terrainrenderer.h" />
+    <ClInclude Include="src\terrainshader.h" />
     <ClInclude Include="src\text.h" />
-    <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\data\shader\flat.frag" />

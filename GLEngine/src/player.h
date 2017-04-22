@@ -13,21 +13,19 @@
 #define PLAYER_JUMP_INTENSITY	30.f;
 
 class Renderer;
-class PlayerCamera;
+class Camera;
 class Player : public Entity
 {
 public:
 	using Entity::Entity;
-
-	void render(Renderer &renderer);
 	void moveProcess(std::vector<terrain_ptr> &terrains);
 
-	void setCamera(PlayerCamera& camera) { m_camera = &camera; }
-	PlayerCamera& camera() { return *m_camera; }
+	void setCamera(Camera& camera) { m_camera = &camera; }
+	Camera& camera() { return *m_camera; }
 	float debug_height = 0.f;
 
 	//test
-	uint32_t currentTerrainID();
+	uint32_t current_terrain_id(const std::vector<terrain_ptr> &terrains);
 	int debug_terrain_id = 0;
 private:
 	void inputStateEvent();
@@ -42,6 +40,6 @@ private:
 	bool on_air = false;
 
 	Matrix4x4 matrix;
-	PlayerCamera* m_camera;
+	Camera* m_camera;
 };
 

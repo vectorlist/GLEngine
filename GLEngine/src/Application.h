@@ -5,6 +5,7 @@
 #include <SDL2/SDL_image.h>
 #include <string>
 #include <Renderer.h>
+#include <terrainrenderer.h>
 #include <chrono>
 
 typedef std::chrono::high_resolution_clock::time_point TimePoint;
@@ -22,7 +23,7 @@ public:
 	bool buildWindow();
 	void contextInfo();
 	//main loop
-	void run(Renderer &renderer);
+	void run(Renderer &renderer, TerrainRenderer &terrainRenderer);
 
 	//get frame time
 	static TimePoint last_frame_time;

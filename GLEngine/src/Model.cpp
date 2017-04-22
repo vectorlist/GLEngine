@@ -1,15 +1,36 @@
 #include <Model.h>
-
+#include <loadmanager.h>
 
 Model::Model()
 {
 
 }
 
-Model::Model(const std::string & filename, std::string texture)
-	: diffuse_texture_path(texture)
+Model::Model(const std::string & filename,
+	std::string diffuse, std::string specular, std::string normal)
+	: mesh(NULL)
 {
 	loadModel(filename);
+
+	if (!diffuse.empty())
+		textures.diffuse = LOAD_TEXTURE(diffuse);
+	else
+		textures.diffuse = LOAD_TEXTURE(FILE_DEFAULT_DIFFUSE);
+
+	if (!specular.empty())
+		textures.specular = LOAD_TEXTURE(specular);
+	else
+		textures.specular = NULL;
+
+	if (!normal.empty())
+		textures.normal = LOAD_TEXTURE(diffuse);
+	else
+		textures.normal = NULL;
+}
+
+Model::~Model()
+{
+	delete mesh;
 }
 
 
@@ -36,8 +57,9 @@ void Model::processNode(aiNode* node, const aiScene* scene)
 {
 	for (GLuint i = 0; i < node->mNumMeshes; i++)
 	{
-		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		this->meshes.push_back(this->processMesh(mesh, scene));
+		aiMesh* aimesh = scene->mMeshes[node->mMeshes[i]];
+		//this->meshes.push_back(processMesh(mesh, scene));
+		mesh = processMesh(aimesh, scene);
 	}	
 	for (GLuint i = 0; i < node->mNumChildren; i++)
 	{
@@ -46,7 +68,7 @@ void Model::processNode(aiNode* node, const aiScene* scene)
 
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
+Mesh* Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
 	std::vector<Vertex> vertices;
 	std::vector<uint32_t> indices;
@@ -101,7 +123,5 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 		
 	}
 
-	if (diffuse_texture_path.length())
-		return Mesh(vertices, indices, diffuse_texture_path);
-	return Mesh(vertices, indices);
+	return new Mesh(vertices, indices);
 }

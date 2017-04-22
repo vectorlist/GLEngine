@@ -4,42 +4,43 @@
 #include <string>
 #include <Mesh.h>
 #include <matrix4x4.h>
+#include <SDL2/SDL_image.h>
 
-#define		TERRAIN_SIZE  800.f
-#define		TERRAIN_FLAT_VERTEX_SIZE		128
-#define		MAX_HEIGHT  40.0f
-#define		MAX_PIXEL_COLOR  16777216.0f
-#define		MAX_PIXEL_COLOR_RGB 256.f * 256.f * 256.f
-constexpr std::uint32_t max_pixel_colour = 256 * 256 * 256;
+struct TerrainTexure
+{
+	Texture* background;
+	Texture* textureR;
+	Texture* textureG;
+	Texture* textureB;
+	Texture* textureBlend;
+};
+
+struct TerrainCreateInfo
+{
+	float x;
+	float z;
+	TerrainTexure textures;
+	std::string heightFilePath;
+};
 
 class Terrain {
 public:
-	//Terrain(){}
-	Terrain::Terrain(float x, float z,
-		const std::string &texture_path, 
-		std::string height_map_path = "");
-
-	Mesh generateTerrain(
-		const std::string &texture_path,
-		const std::string& height_map_path);
-	Mesh generateFlatTerrain(
-		const std::string &texture_path);
+	Terrain(const TerrainCreateInfo &info);
+	~Terrain();
 	
 	float getHeightOfTerrain(float worldX, float worldZ) const;
 
-	Mesh mesh;
+	Mesh* mesh;
 	Matrix4x4 matrix;
-	static float barryCentric(
-		vec3f p1, const vec3f p2,
-		vec3f p3, const vec2f pos);
-
+	TerrainTexure textures;
 	float get_x()const;
 	float get_z()const;
 	vec3f get_relative_pos() const;
 
 private:
 	std::vector<std::vector<float>> heights;
-	
+	Mesh* generateTerrain(const std::string& height_map_path);
+	Mesh* generateFlatTerrain();
 
 	float	relative_x;
 	float	relative_z;
@@ -50,6 +51,10 @@ private:
 	float get_height(unsigned int x, unsigned int z, 
 		SDL_Surface* map);
 
+	static float barryCentric(
+		vec3f p1, const vec3f p2,
+		vec3f p3, const vec2f pos);
+
 };
 
 
@@ -59,3 +64,4 @@ inline vec3f Terrain::get_relative_pos() const
 { 
 	return vec3f(relative_x, 0.0f, relative_z);
 }
+

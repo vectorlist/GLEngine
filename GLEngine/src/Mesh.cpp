@@ -1,7 +1,11 @@
 #include <Mesh.h>
 
 //it must be Shader_Type Index
-std::vector<Texture*> Mesh::global_textures;
+
+Mesh::Mesh()
+{
+	//dothing
+}
 
 Mesh::Mesh(std::vector<Vertex> vertice, std::vector<uint32_t> indices)
 {
@@ -10,22 +14,15 @@ Mesh::Mesh(std::vector<Vertex> vertice, std::vector<uint32_t> indices)
 	build_buffers();
 }
 
-Mesh::Mesh(
-	std::vector<Vertex> vertice,
-	std::vector<uint32_t> indices,
-	const std::string &texture)
-{
-	this->vertices = vertice;
-	this->indices = indices;
-	build_buffers();
-	setTexture(texture, false, TEXTURE_DIFFUSE);
-}
-
 Mesh::~Mesh()
 {
-	/*glDeleteVertexArrays(1, &vao);
-	glDeleteBuffers(1, &vbo);
-	glDeleteBuffers(1, &ibo);*/
+
+	if(vao)
+		glDeleteVertexArrays(1, &vao);
+	if(vbo)
+		glDeleteBuffers(1, &vbo);
+	if(ibo)
+		glDeleteBuffers(1, &ibo);
 }
 
 void Mesh::build_buffers()
@@ -68,107 +65,15 @@ void Mesh::build_buffers()
 		(GLvoid*)offsetof(Vertex, Vertex::bitangent));
 
 	glBindVertexArray(0);
-}
 
-
-void Mesh::setTexture(const std::string & filename, bool clamp, Texture_Type type)
-{
-	//initialize when local
-	Texture* texture = NULL;
-	bool found = false;
-	for (int i = 0; i < global_textures.size(); ++i)
-	{
-		//if path is not in already loaded textures
-		if (!filename.compare(Mesh::global_textures[i]->path))
-		{
-			texture = Mesh::global_textures[i];
-			found = true;
-		}
-	}
-	//path is not in global texture
-	if (!found) {
-		texture = Mesh::loadTexture(filename, clamp, type);
-	}
-	
-	//set texture to this mesh
-	switch (type)
-	{
-	case TEXTURE_DIFFUSE:
-		maps.diffuse = texture;
-		break;
-	case TEXTURE_SPECULAR:
-		maps.specular = texture;
-		break;
-	case TEXTURE_NORMAL:
-		maps.normal = texture;
-		break;
-	}
-}
-
-Texture* Mesh::loadTexture(const std::string & filename, bool clamp, Texture_Type type)
-{
-	SDL_Surface* image = IMG_Load(filename.c_str());
-	SDL_Texture* t = IMG_LoadTexture(NULL, filename.c_str());
-	if (image == NULL) {
-		std::string err = "failed to load image : ";
-		err.append(filename);
-		LOG_ERROR(err);
-	}
-	Texture* texture = new Texture();
-	texture->type = type;
-	texture->path = filename;
-
-	glGenTextures(1, &texture->id);				//id itself
-	glBindTexture(GL_TEXTURE_2D, texture->id);
-
-	if (clamp) {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	}
-	else {
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	}
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-
-	if (image->format->BytesPerPixel == 4)
-	{
-		GLenum format = (image->format->Rmask == 255) ? GL_RGBA : GL_BGRA;
-
-		glTexImage2D(
-			GL_TEXTURE_2D,
-			0,
-			GL_RGBA,
-			image->w, image->h,
-			0,
-			format,
-			GL_UNSIGNED_BYTE,
-			(GLvoid*)image->pixels);
-	}
-	else {
-		GLenum format = (image->format->Rmask == 255) ? GL_RGB : GL_BGR;
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0,
-			format,
-			GL_UNSIGNED_BYTE,
-			(GLvoid*)image->pixels);
-	}
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	SDL_FreeSurface(image);
-	SDL_DestroyTexture(t);
-
-	global_textures.push_back(texture);
-	return texture;
+	indices_size = indices.size();
+	vertices.clear();
+	indices.clear();
 }
 
 void Mesh::render()
 {
 	glBindVertexArray(this->vao);
-	glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, this->indices_size, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

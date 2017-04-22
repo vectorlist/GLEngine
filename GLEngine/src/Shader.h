@@ -1,25 +1,29 @@
 #pragma once
 
-#include <config.h>
-#include <string>
+#include <shadertool.h>
 
-namespace Shader
+class Shader
 {
-	GLuint load(const char* vertfile, const char* fragfile);
-	std::string codeFromFile(const std::string &filename);
-	GLuint compile(const GLchar* source, const GLenum type, const char *code);
+public:
+	Shader(const char* vert, const char* frag, const char* geo = 0);
+	virtual~Shader();
 
-	void setUniform1i(GLuint &program, uint32_t data, const char* name);
-	void setUniform1f(GLuint &program, float data, const char* name);
-	void setUniForm2i(GLuint &program, const vec2i &data, const char* name);
-	void setUniForm2f(GLuint &program, const vec2f &data, const char* name);
-	void setUniForm3f(GLuint &program, const vec3f &data, const char* name);
-	void setUniformMatrix4f(
-		GLuint &program,
-		const Matrix4x4 &mat,
-		const char* name,
-		bool transpose = false);
 
-	void load_vec3f(GLint location, const vec3f &data);
+	GLuint id;
 
-}
+	void bind();
+	void unbind();
+	virtual void buildUniformLocations() = 0;
+protected:
+	GLint setUniformLocation(const char* uniformname);
+	void setLocation1f(GLint location, float data) const;
+	void setLocation1i(GLint location, int data) const;
+	void setLocation2f(GLint location, const vec2f &data) const;
+	void setLocation3f(GLint location, const vec3f &data) const;
+	void setLocation4f(GLint location, const vec4f &data) const;
+	void setLocationMatrix4f(GLint location, const Matrix4x4 &data, bool transpose = false) const;
+
+};
+
+
+
