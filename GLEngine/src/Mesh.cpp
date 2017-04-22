@@ -67,8 +67,8 @@ void Mesh::build_buffers()
 	glBindVertexArray(0);
 
 	indices_size = indices.size();
-	vertices.clear();
-	indices.clear();
+	/*vertices.clear();
+	indices.clear();*/
 }
 
 void Mesh::render()

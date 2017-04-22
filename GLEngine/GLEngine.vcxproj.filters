@@ -100,7 +100,7 @@
       <Filter>src\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\skyshader.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>src\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -195,6 +195,9 @@
       <Filter>src\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\skyshader.h">
+      <Filter>src\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

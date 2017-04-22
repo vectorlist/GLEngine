@@ -209,6 +209,7 @@
     <ClInclude Include="src\terrainshader.h" />
     <ClInclude Include="src\text.h" />
     <ClInclude Include="src\texture.h" />
+    <ClInclude Include="src\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\data\shader\flat.frag" />

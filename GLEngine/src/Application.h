@@ -6,6 +6,7 @@
 #include <string>
 #include <Renderer.h>
 #include <terrainrenderer.h>
+#include <EnvironmentRenderer.h>
 #include <chrono>
 
 typedef std::chrono::high_resolution_clock::time_point TimePoint;
@@ -23,7 +24,10 @@ public:
 	bool buildWindow();
 	void contextInfo();
 	//main loop
-	void run(Renderer &renderer, TerrainRenderer &terrainRenderer);
+	void run(
+		Renderer &renderer, 
+		TerrainRenderer &terrainRenderer,
+		EnvironmentRenderer &environRenderer);
 
 	//get frame time
 	static TimePoint last_frame_time;

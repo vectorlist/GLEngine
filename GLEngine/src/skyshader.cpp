@@ -5,6 +5,8 @@ SkyShader::SkyShader(const char* vert, const char* frag)
 	: Shader(vert, frag)
 {
 	buildUniformLocations();
+	//dynamically
+	setAttribute(0, "position");
 }
 
 SkyShader::~SkyShader()
@@ -17,8 +19,7 @@ void SkyShader::buildUniformLocations()
 	loc.proj = setUniformLocation("proj");
 	loc.view = setUniformLocation("view");
 	loc.fogColor = setUniformLocation("fogColor");
-	loc.cubemap1 = setUniformLocation("cubemap1");
-	loc.cubemap2 = setUniformLocation("cubemap2");
+	loc.cubemap = setUniformLocation("cubemap");
 	loc.blendFactor = setUniformLocation("blendFactor");
 	unbind();
 }

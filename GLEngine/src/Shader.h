@@ -16,6 +16,7 @@ public:
 	virtual void buildUniformLocations() = 0;
 protected:
 	GLint setUniformLocation(const char* uniformname);
+	void setAttribute(GLuint index, const char* attribname);
 	void setLocation1f(GLint location, float data) const;
 	void setLocation1i(GLint location, int data) const;
 	void setLocation2f(GLint location, const vec2f &data) const;

@@ -6,6 +6,7 @@
 #include <light.h>
 #include <forwardshader.h>
 #include <terrainshader.h>
+#include <skyshader.h>
 
 class Camera;
 class Renderer : public AbstractRenderer
@@ -25,8 +26,9 @@ public:
 	//Light uniform_light;
 	//TODO : replace to UBO
 	UBOLight light;
-	std::shared_ptr<ForwardShader> forwardShader;
-	std::shared_ptr<TerrainShader> terrainShader;
+	std::shared_ptr<ForwardShader>	forwardShader;
+	std::shared_ptr<TerrainShader>	terrainShader;
+	std::shared_ptr<SkyShader>		skyShader;
 
 	camera_ptr camera;
 	player_ptr player;
@@ -51,6 +53,7 @@ inline void Renderer::rebuildShaders()
 	LOG << "rebuild shaders..." << ENDL;
 	forwardShader.reset();
 	terrainShader.reset();
+	skyShader.reset();
 
 	if (!forwardShader) {
 		forwardShader =
@@ -64,5 +67,9 @@ inline void Renderer::rebuildShaders()
 			(DIR_SHADER"terrain.vert", DIR_SHADER"terrain.frag");
 	}
 	
+	if (!skyShader) {
+		skyShader =
+			std::make_shared<SkyShader>(DIR_SHADER"sky.vert", DIR_SHADER"sky.frag");
+	}
 	initUniforms();
 }

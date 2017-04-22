@@ -22,8 +22,7 @@ private:
 		int proj;
 		int view;
 		int fogColor;
-		int cubemap1;
-		int cubemap2;
+		int cubemap;
 		int blendFactor;
 	}loc;
 };

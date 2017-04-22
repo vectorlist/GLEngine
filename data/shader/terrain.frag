@@ -25,6 +25,7 @@ uniform sampler2D textureB;
 uniform sampler2D textureBlend;
 
 uniform vec3 lightColor;
+//uniform vec3 lightPos;
 uniform vec3 skyColor;
 
 in vec2 fragST;

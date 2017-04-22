@@ -27,6 +27,11 @@ GLint Shader::setUniformLocation(const char * uniformname)
 	return glGetUniformLocation(id,uniformname);
 }
 
+void Shader::setAttribute(GLuint index, const char * attribname)
+{
+	glBindAttribLocation(id, index, attribname);
+}
+
 void Shader::setLocation1f(GLint location, float data) const
 {
 	glUniform1f(location, data);

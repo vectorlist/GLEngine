@@ -1,18 +1,28 @@
 #pragma once
 
 #include <mesh.h>
+#include <Camera.h>
+
+struct TEST
+{
+
+};
 
 class Texture;
 class SkyShader;
 class EnvironmentRenderer
 {
 public:
-	EnvironmentRenderer(SkyShader* shader, const std::vector<std::string> &faces);
+	EnvironmentRenderer();
 	~EnvironmentRenderer();
 
-	void render();
+	void render(const Camera &camera);
 
-	Mesh mesh;
+	void loadCubeMap(const std::vector<float> &data);
+	/*Mesh* mesh;*/
+	GLuint vao;
+	GLuint vbo;
+	uint32_t vertices_count;
 	SkyShader* shader;
 	Texture* texture;
 };

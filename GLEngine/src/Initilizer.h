@@ -7,6 +7,8 @@
 #include <terrain.h>
 #include <loadmanager.h>
 #include <player.h>
+#include <entity.h>
+#include <utils.h>
 
 namespace Initializer
 {
@@ -24,7 +26,7 @@ inline void Initializer::initCamera(Renderer &renderer)
 	/*model_ptr boxman = model_ptr(new Model(DIR_MODEL"stone.obj",
 		DIR_MODEL"boxman/boxman.jpg"));*/
 	renderer << boxman;
-	player_ptr player = player_ptr(new Player(*boxman.get(), vec3f(0, 0, 0), 0, 0, 0,5));
+	player_ptr player = player_ptr(new Player(*boxman.get(), vec3f(0, 0, 0), 0, 0, 0));
 	renderer.player = player;
 	renderer << (entity_ptr)player;
 	camera_ptr camera = camera_ptr(new Camera(*player.get()));
@@ -74,14 +76,50 @@ inline void Initializer::initScene(Renderer &renderer)
 	renderer.terrainShader =
 		std::make_shared<TerrainShader>(DIR_SHADER"terrain.vert", DIR_SHADER"terrain.frag");
 
+	renderer.skyShader =
+		std::make_shared<SkyShader>(DIR_SHADER"sky.vert", DIR_SHADER"sky.frag");
 	/*----------------------------Lights ---------------------------------*/
-;
-
-	/*std::vector<GLuint> enabled_uniforms_shader{ renderer.shaders[SHADER_TERRAIN] };
-	renderer.uniform_light.setLight();
-	renderer.uniform_light.initLightUniform(enabled_uniforms_shader);*/
 
 
+	/*---------------------------- Scene ---------------------------------*/
+	//based model
+	model_ptr rock01 = model_ptr(new Model(DIR_MODEL"rock/rock01.obj", DIR_MODEL"rock/rock01.jpg"));
+
+	renderer << rock01;
+
+	//check terrain id
+	auto terrainID = [](float x, float z)
+	{
+		if (x < 0.f && z > 0)  return 0;
+		else if (x >= 0.f && z >= 0) return 1;  //x 0-800 z 0-800
+		else if (x >= 0.0f && z < 0) return 2;  //0 -- 800 0 --- -800
+		else if (x < 0.0f && z < 0) return 3;  //0 -- -800 0 --- -800
+	};
+
+	auto randomTerrainPos = [&]
+	{
+		//first we need -800  to 800 rand flaot
+		float x = 1 - RAND_FLOAT() * 800 + 400;
+		float z = 1 - RAND_FLOAT() * 800 + 400;
+
+		//second pick terrain id
+		auto id = terrainID(x, z);
+		//get height y position
+		float y = renderer.terrains[id]->getHeightOfTerrain(x,z);
+		return vec3f(x, y, z);
+ 	};
+	
+	//TODO : mix object with random and scale texture offset selective st
+	for (int i = 0; i < 100; ++i)
+	{
+		//instance
+		vec3f rpos = randomTerrainPos();
+		entity_ptr rock = entity_ptr(new Entity(*rock01.get(), 
+			rpos, 0, 0, 0, 3));
+		renderer << rock;
+	}
+
+	
 
 }
 

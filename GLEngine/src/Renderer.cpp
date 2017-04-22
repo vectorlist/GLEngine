@@ -90,6 +90,12 @@ void Renderer::initUniforms()
 	terrainShader->setLightpos(light.position);
 	terrainShader->setSkyColor(skyColor);
 	terrainShader->unbind();
+	//ENVIRONMENT
+	skyShader->bind();
+	skyShader->setProjectionMatrix(projection.proj);
+	skyShader->setFogColor(skyColor);
+	skyShader->unbind();
+
 
 }
 
@@ -102,6 +108,10 @@ void Renderer::updateUniforms()
 	terrainShader->bind();
 	terrainShader->setViewMatrix(camera->viewMatrix());
 	terrainShader->unbind();
+
+	skyShader->bind();
+	skyShader->setViewMatrix(camera->viewMatrix());
+	skyShader->unbind();
 }
 
 void Renderer::renderEntities()

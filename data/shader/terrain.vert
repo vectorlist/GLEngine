@@ -33,7 +33,8 @@ void main()
     fragNormal = normal;
     fragST = st;
     //vecxtor to light
-    fragToLight = lightPos - world.xyz;
+    //fragToLight = lightPos - world.xyz;
+    fragToLight = lightPos;
     //fragToLight = vec3(3,3,3) - world.xyz;
     //invert camera direction
     fragCamera = (inverse(view) * vec4(0,0,0,1)).xyz - world.xyz;

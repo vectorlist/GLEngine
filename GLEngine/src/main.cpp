@@ -16,23 +16,33 @@ void setConsoleOutput(int x, int y, int w, int h)
 	MoveWindow(console, x, y, w, h, TRUE);
 }
 
-struct SomeData
+class SomeData
 {
-	float data=0;
+public:
+	SomeData(const char* d) : data(d){}
+	bool operator==(char* otherData)
+	{
+		return (this->data == otherData);
+	}
+
+	//this friend dose not meaning just for declare u can use it without this
+	//but u need it if we can find this func in cpp or somewhere
+	//it can't be const func it's already const func
+	friend bool operator==(const char* firstinput,const SomeData &secondinput)
+	{
+		return (firstinput == secondinput.data);
+	}
+	
+	const char* data;
 };
 
-void lambda_func(SomeData& aa)
-{
-	aa.data += 1;
-	//LOG << aa.data << LOG;
-	if (aa.data > 10) return;
-	lambda_func(aa);
-	
-}
 
 int main(int args, char* argv[])
 {
 	setConsoleOutput(50, 50, 600, 720);
+
+	SomeData aa("damn");
+	//LOG << ("damn" == aa()) << ENDL;
 
 	Application app("OpenGL Engine",1280,720);
 	Renderer renderer;
@@ -44,9 +54,11 @@ int main(int args, char* argv[])
 	Initializer::initTextures(renderer);
 
 	TerrainRenderer terrainRenderer;// (/**renderer.terrainShader*/);
-	
+	EnvironmentRenderer environmentRenderer;
 
-	app.run(renderer, terrainRenderer);
+	app.run(renderer, terrainRenderer, environmentRenderer);
+
+	//system("pause");
 
 	return 0;
 }

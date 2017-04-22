@@ -72,7 +72,10 @@ void Application::contextInfo()
 	LOG << "Max Vertex buffer size     : " << max_buffer_size << ENDL;
 }
 
-void Application::run(Renderer &renderer, TerrainRenderer &terrainRednerer)
+void Application::run(
+	Renderer &renderer,
+	TerrainRenderer &terrainRednerer,
+	EnvironmentRenderer &environRenderer)
 {
 	
 
@@ -102,7 +105,10 @@ void Application::run(Renderer &renderer, TerrainRenderer &terrainRednerer)
 		renderer.render();								//render forwar entities
 		terrainRednerer.shader = renderer.terrainShader.get();
 		terrainRednerer.Render(renderer.terrains);		//render terrtains
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
+		environRenderer.shader = renderer.skyShader.get();
+		environRenderer.render(camera);					//render environment
 
 		renderer.renderText();
 		/*------------ RESET SWAPCHAIN ------------*/

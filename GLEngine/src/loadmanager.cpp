@@ -81,7 +81,10 @@ Texture* LoadManager::loadTexture(const std::string &path, bool clamp, Texture_T
 
 Texture* LoadManager::loadCubeMap(std::vector<std::string> faces)
 {
-	texture_ptr texture;
+	texture_ptr texture = texture_ptr(new Texture);
+	//TODO : fix full path of vector
+	texture->type = TEXTURE_DIFFUSE;
+
 	glGenTextures(1, &texture->id);
 	
 	glActiveTexture(GL_TEXTURE0);
@@ -96,21 +99,45 @@ Texture* LoadManager::loadCubeMap(std::vector<std::string> faces)
 			err.append(faces[i].c_str());
 			LOG_ERROR(err);
 		}
+		//add paths
 		texture->path.append(faces[i]);
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
-			image->w,
-			image->h,
-			0,
-			GL_RGBA, GL_UNSIGNED_INT, image->pixels);
+
+		if (image->format->BytesPerPixel == 4)
+		{
+			GLenum format = (image->format->Rmask == 255) ? GL_RGBA : GL_BGRA;
+
+			glTexImage2D(
+				GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0,
+				GL_RGBA,
+				image->w, image->h,
+				0,
+				format,
+				GL_UNSIGNED_BYTE,
+				(GLvoid*)image->pixels);
+		}
+		else {
+			GLenum format = (image->format->Rmask == 255) ? GL_RGB : GL_BGR;
+
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+				0,
+				GL_RGB,
+				image->w, image->h,
+				0,
+				format,
+				GL_UNSIGNED_BYTE,
+				(GLvoid*)image->pixels);
+		}
 		SDL_FreeSurface(image);
 	}
 
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	LoadManager::loadedTextures.push_back(texture);
+
 	return texture.get();
 }
 
