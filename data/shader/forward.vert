@@ -29,7 +29,10 @@ void main()
     vec4 positionRelativeToCam = view * world;
     gl_Position = proj * positionRelativeToCam;
     fragNormal = (model * vec4(normal,0)).xyz;
-    fragLightPos = lightPos - world.xyz;
+    //fragLightPos = lightPos - world.xyz;
+    //relative light source dosent work
+    //TODO : per obejct need to shiness
+    fragLightPos = lightPos;
     fragST = st;
     fragCamera = (inverse(view) * vec4(0,0,0,1)).xyz - world.xyz;
 

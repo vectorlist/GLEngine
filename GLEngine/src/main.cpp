@@ -41,9 +41,6 @@ int main(int args, char* argv[])
 {
 	setConsoleOutput(50, 50, 600, 720);
 
-	SomeData aa("damn");
-	//LOG << ("damn" == aa()) << ENDL;
-
 	Application app("OpenGL Engine",1280,720);
 	Renderer renderer;
 	
@@ -57,8 +54,13 @@ int main(int args, char* argv[])
 	EnvironmentRenderer environmentRenderer;
 
 	app.run(renderer, terrainRenderer, environmentRenderer);
+	
+	
+	/*for(int i =0; i < 10; ++i)
+		LOG << selectiveBuRandom() << ENDL;;
 
-	//system("pause");
+
+	system("pause");*/
 
 	return 0;
 }

@@ -7,8 +7,8 @@ uniform samplerCube cubeMap;
 uniform vec3 fogColor;
 
 out vec4 outColor;
-
-const float lower = 0.0f;
+//TODO : replace uniform var
+const float lower = 100.0f;
 const float upper = 20.f;
 void main()
 {

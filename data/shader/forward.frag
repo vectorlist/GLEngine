@@ -12,7 +12,11 @@ in vec3 fragNormal;
 in vec3 fragLightPos;
 in vec3 fragCamera;
 in vec2 fragST;
+//TODO : sun with lights arrays
 
+//TODO : replace uniform
+const float shininess = 2;
+const float reflectivity = 20.0f;
 
 void main()
 {
@@ -40,8 +44,6 @@ void main()
     float specularFactor = dot(reflectedLightDir, unitVectorToCamera);
     specularFactor = max(specularFactor, 0.0);
 
-    float shininess = 4;
-    float reflectivity = 30.0f;
     float dampedFactor = pow(specularFactor, shininess);
 
     vec3 diffuse = brightness * lightColor/attfactor;

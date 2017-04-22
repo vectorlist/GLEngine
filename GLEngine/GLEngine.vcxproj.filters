@@ -198,7 +198,7 @@
       <Filter>src\Shader</Filter>
     </ClInclude>
     <ClInclude Include="src\utils.h">
-      <Filter>Header Files</Filter>
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
