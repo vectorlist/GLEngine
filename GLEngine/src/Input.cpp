@@ -93,6 +93,15 @@ namespace Input
 			//renderer << model_ptr(new Model(DIR_MODEL"box.obj"));
 			renderer.rebuildShaders();
 			break;
+
+		case SDLK_5:
+			//renderer << model_ptr(new Model(DIR_MODEL"box.obj"));
+			if (renderer.isShadowView == 0.0f) {
+				renderer.isShadowView = 1.0f;
+			}
+			else
+				renderer.isShadowView = 0.0f;
+			break;
 		/*case SDLK_w:
 			renderer.current_camera()->process_keyboard(FORWARD, 3.f);
 			break;

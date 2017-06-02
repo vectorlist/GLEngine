@@ -37,6 +37,9 @@
     <Filter Include="src\Model">
       <UniqueIdentifier>{45f8d919-9aec-4ab7-88bf-21923240a7dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\shadow">
+      <UniqueIdentifier>{3515492e-8362-47fd-a4c4-6badeb7f3d6d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Input.cpp">
@@ -101,6 +104,18 @@
     </ClCompile>
     <ClCompile Include="src\skyshader.cpp">
       <Filter>src\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\framebuffer.cpp">
+      <Filter>src\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shadowrenderer.cpp">
+      <Filter>src\shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shadowbbox.cpp">
+      <Filter>src\shadow</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +214,15 @@
     </ClInclude>
     <ClInclude Include="src\utils.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\framebuffer.h">
+      <Filter>src\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowrenderer.h">
+      <Filter>src\shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shadowbbox.h">
+      <Filter>src\shadow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

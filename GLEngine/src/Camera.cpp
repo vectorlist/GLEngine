@@ -81,3 +81,17 @@ void Camera::mouseWheelEvent(int delta)
 	mouse_wheel_delta = delta;
 }
 
+void Camera::setProjection(float fovy, float aspect, float znear, float zfar)
+{
+	this->m_fovy = fovy;
+	this->m_aspect = aspect;
+	this->m_nearPlane = znear;
+	this->m_farPlane = zfar;
+	projection = vml::perspective(fovy, aspect, znear, zfar);
+}
+
+const Matrix4x4& Camera::projectionMatrix() const
+{
+	return projection;
+}
+

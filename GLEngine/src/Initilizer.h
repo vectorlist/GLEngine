@@ -94,6 +94,8 @@ inline void Initializer::initScene(Renderer &renderer)
 		//first we need -800  to 800 rand flaot
 		float x = 1 - RAND_FLOAT() * 800 + 400;
 		float z = 1 - RAND_FLOAT() * 800 + 400;
+		/*float x = 1 - RAND_FLOAT() * 200 + 100;
+		float z = 1 - RAND_FLOAT() * 200 + 100;*/
 		//second pick terrain id
 		auto id = Utils::getTerrainID(x, z);
 		//get height y position
@@ -102,23 +104,27 @@ inline void Initializer::initScene(Renderer &renderer)
  	};
 	
 	//TODO : mix object with random and scale texture offset selective st
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < 200; ++i)
 	{
 		//instance
 		vec3f rpos = randomTerrainPos();
+		entity_ptr tree = entity_ptr(new Entity(*tree01.get(),
+			rpos, 0, 0, 0, RAND_FLOAT() * 3));
+		renderer << tree;
 		//rock gen 60%
 		//tree gen 20%
 		//other gen 20%
-		if (i % 6) {
-			entity_ptr rock = entity_ptr(new Entity(*rock01.get(),
-				rpos, 0, 0, 0, 3));
-			renderer << rock;
-		}
-		else {
-			entity_ptr tree = entity_ptr(new Entity(*tree01.get(),
-				rpos, 0, 0, 0, RAND_FLOAT() * 3));
-			renderer << tree;
-		}
+		//if (i % 6) {
+		//	/*entity_ptr rock = entity_ptr(new Entity(*rock01.get(),
+		//		rpos, 0, 0, 0, 3));
+		//	renderer << rock;*/
+		//	continue;
+		//}
+		//else {
+		//	entity_ptr tree = entity_ptr(new Entity(*tree01.get(),
+		//		rpos, 0, 0, 0, RAND_FLOAT() * 3));
+		//	renderer << tree;
+		//}
 		/*TODO tree position get along with terrain suface normal*/
 		
 	}

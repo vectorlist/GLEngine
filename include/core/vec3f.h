@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <assert.h>
 #include <ostream>
+#include <vec4f.h>
 #undef min
 #undef max
 class vec3f
@@ -14,6 +15,7 @@ public:
 	vec3f() : x(0.0), y(0.0), z(0.0){}
 	vec3f(const vec3f &v) : x(v.x), y(v.y), z(v.z){}
 	vec3f(float x, float y, float z) : x(x), y(y), z(z){}
+	vec3f(const vec4f &v) : x(v.x), y(v.y), z(v.z){}
 	explicit vec3f(float f) : x(f), y(f), z(f){}
 
 	float& operator[](unsigned int i);

@@ -20,6 +20,7 @@ public:
 
 	const Model &model;
 
+	Matrix4x4 transform() const;
 	vec3f& position()  { return m_position; }
 	float rx() { return rot_x; }
 	float ry() { return rot_y; }

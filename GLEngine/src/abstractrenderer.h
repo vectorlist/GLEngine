@@ -36,8 +36,6 @@ public:
 	uint32_t terrain_id;
 	GLuint shaders[SHADER_MAX_NUM];
 
-	uint32_t width, height;
-
 	AbstractRenderer& operator<<(model_ptr &t);
 	AbstractRenderer& operator<<(terrain_ptr &t);
 	AbstractRenderer& operator<<(text_ptr &t);

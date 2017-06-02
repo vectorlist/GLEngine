@@ -63,15 +63,8 @@ void Player::moveProcess(std::vector<terrain_ptr> &terrains)
 	currentUpwardSpeed += PLAYER_GRAVITY * APP_CURRENT_TIME;
 	translate(0, currentUpwardSpeed * APP_CURRENT_TIME, 0);
 
-	//test for terrain collision
-	// --- 0(800) --- 1(-800) ---- 2(800) -------3(-800) terrain
-	//vector<Terrain> swtich to by id
-	//realworld position
-	
-	//not camera position 
 	debug_height = terrain->getHeightOfTerrain(position().x, position().z);
-	//LOG << "collision height : " << collision_height<< ENDL;
-	//check player pos.y and collision height
+
 	if (position().y < debug_height) {
 		currentUpwardSpeed = 0;
 		on_air = false;

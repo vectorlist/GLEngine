@@ -27,3 +27,19 @@ namespace Log
 		//assert(0 && msg.c_str());
 	}
 }
+
+class LogWriter
+{
+public:
+	LogWriter(const std::string& filename){}
+
+	inline void write(){}
+
+	std::string data;
+	//std::ostream log_file;
+	LogWriter& operator<<(const std::string &s) {
+		data.append(s);
+		return *this;
+	}
+
+};

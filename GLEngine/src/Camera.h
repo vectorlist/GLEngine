@@ -16,12 +16,18 @@ public:
 	void mouseMoveEvent(int x, int y);
 	void mouseWheelEvent(int delta);
 	
+	void setProjection(float fovy, float apsect, float znear, float zfar);
+	const Matrix4x4& projectionMatrix() const;
 	Matrix4x4 viewMatrix();
 	
 	Player& player() { return m_player; }
 	vec3f& position() { return m_position; }
 	float pitch() { return m_pitch; }
 	float yaw() { return m_yaw; }
+	float fov() const { return m_fovy; }
+	float aspect() const { return m_aspect; }
+	float nearPlane() const { return m_nearPlane; }
+	float farPlane() const { return m_farPlane; }
 private:
 	void calcZoom();
 	void calcPitch();
@@ -38,5 +44,11 @@ private:
 	int mouse_y_delta = 0;
 	vec3f m_position;
 	Player &m_player;
+	//projection
+	Matrix4x4 projection;
+	float m_fovy;
+	float m_aspect;
+	float m_nearPlane;
+	float m_farPlane;
 };
 

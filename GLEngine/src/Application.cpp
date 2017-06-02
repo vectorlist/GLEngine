@@ -75,7 +75,8 @@ void Application::contextInfo()
 void Application::run(
 	Renderer &renderer,
 	TerrainRenderer &terrainRednerer,
-	EnvironmentRenderer &environRenderer)
+	EnvironmentRenderer &environRenderer,
+	ShadowRenderer &shadowRenderer)
 {
 	
 
@@ -87,34 +88,57 @@ void Application::run(
 	Camera& camera = *renderer.camera;
 	Player& player = camera.player();
 
+
+	//test shadow 
+	auto debugShader = LOAD_SHADER(DIR_SHADER"debug.vert", DIR_SHADER"debug.frag");
+	//ShadowRenderer shadowRenderer(camera);
+
+	uint32_t frame = 0;
 	while (renderer.isRunninig)
 	{
-	
+		//im not sure it need
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		Performance::begin(Counter_Type::FPS);
 		/*--------------- EVENT --------------------*/
 		Input::playerEvent(renderer);
-		
-		
+
 		/*--------------- MOVEMENT -----------------*/
 		player.moveProcess(renderer.terrains);
 		camera.moveProcess();
 		renderer.terrain_height = player.debug_height;
 		renderer.terrain_id = player.debug_terrain_id;
-		
+		renderer.updateUniforms();
+		/*---------------- TEST -----------------*/
+		vec3f sun(10, 10, 8);
+
+		shadowRenderer.render(renderer.entities, sun, player.position());
+		//re buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		debug(debugShader, camera, shadowRenderer.getShadowMap(), sun,
+			shadowRenderer.getShadowMatrix(),
+			shadowRenderer.getShadowRelativeMatrix(),
+			renderer.entities, renderer.terrains,
+			renderer.isShadowView);
+//#define _RENDER		
 		/*-------------- RENDER -------------------*/
+#ifdef _RENDER
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderer.render();								//render forwar entities
 		terrainRednerer.shader = renderer.terrainShader.get();
 		terrainRednerer.Render(renderer.terrains);		//render terrtains
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
 		environRenderer.shader = renderer.skyShader.get();
 		environRenderer.render(camera);					//render environment
+
+		
+#endif //_RENDER
 
 		renderer.renderText();
 		/*------------ RESET SWAPCHAIN ------------*/
 		swap_update();						//set global frame time and swap window buffer
 		Performance::end(Counter_Type::FPS);
 		renderer.fps = Performance::get_fps(Counter_Type::FPS);
+		frame++;
 	}
 	releaseWindow();
 }
@@ -139,3 +163,56 @@ void Application::swap_update()
 	delta = current_frame - last_frame_time;
 	last_frame_time = current_frame;
 }
+
+void Application::debug(
+	GLuint shader,
+	Camera &camera,
+	GLuint texture,
+	const vec3f &sun,
+	const Matrix4x4 shadowProjectionView,
+	const Matrix4x4 shadowRelativeView,
+	std::vector<entity_ptr> &es,
+	std::vector<terrain_ptr> &ts,
+	float isShadowView)
+{
+	glUseProgram(shader);
+	ShaderTool::setUniformMatrix4f(shader, camera.projectionMatrix(), "proj", true);
+	ShaderTool::setUniformMatrix4f(shader, camera.viewMatrix(), "view", true);
+	ShaderTool::setUniformMatrix4f(shader, shadowProjectionView, "shadowSpace", true);
+	ShaderTool::setUniformMatrix4f(shader, shadowRelativeView, "shadowRelativeView", true);
+	ShaderTool::setUniForm3f(shader, sun, "sun");
+	ShaderTool::setUniform1i(shader, 0, "shadowMap");
+	ShaderTool::setUniform1f(shader, isShadowView, "isShadowView");
+	ShaderTool::setUniform1f(shader, ShadowBBox::SHADOW_DISTANCE, "shadow_distance");
+
+	//texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	for (auto &e : es)
+	{
+		const Model& model = e->model;
+		//SAHDER & MATRIX
+		Matrix4x4 model_matrix;
+		model_matrix = vml::transform(e->position(), e->rx(), e->ry(), e->rz(), e->scale());
+		ShaderTool::setUniformMatrix4f(shader, model_matrix, "model", true);
+		//VAO
+		glBindVertexArray(model.vao());
+		glDrawElements(GL_TRIANGLES, model.indices_size(), GL_UNSIGNED_INT, NULL);
+		glBindVertexArray(NULL);
+	}
+
+	for (auto &t : ts)
+	{
+		const Mesh& mesh = *t->mesh;
+		
+		//SAHDER & MATRIX
+		ShaderTool::setUniformMatrix4f(shader, t->matrix, "model", true);
+		//VAO
+		glBindVertexArray(mesh.vao);
+		glDrawElements(GL_TRIANGLES, mesh.indices_size, GL_UNSIGNED_INT, NULL);
+		glBindVertexArray(NULL);
+	}
+	glUseProgram(0);
+
+}
+

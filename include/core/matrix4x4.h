@@ -35,6 +35,7 @@ public:
 	Matrix4x4 operator*(const Matrix4x4 &other) const;
 	Matrix4x4& operator*=(const Matrix4x4 &other);
 	vec3f operator*(const vec3f &v) const;
+	vec4f operator*(const vec4f &v) const;
 	Matrix4x4 operator*(float f) const;
 	Matrix4x4& operator*=(float f);
 
@@ -55,6 +56,7 @@ public:
 	void translate(vec3f t);
 	void rotate(AXIS axis, float angle);
 	void scale(vec3f s);
+	void scale(float s);
 
 
 	float m[4][4];
@@ -144,6 +146,16 @@ inline vec3f Matrix4x4::operator*(const vec3f &v) const
 	z = v.x * m[2][0] + v.y * m[2][1] + v.z * m[2][2] + m[2][3];
 
 	return vec3f(x, y, z);
+}
+
+inline vec4f Matrix4x4::operator*(const vec4f & v) const
+{
+	float x, y, z, w;
+	x = v.x * m[0][0] + v.y * m[0][1] + v.z * m[0][2] + v.w * m[0][3];
+	y = v.x * m[1][0] + v.y * m[1][1] + v.z * m[1][2] + v.w * m[1][3];
+	z = v.x * m[2][0] + v.y * m[2][1] + v.z * m[2][2] + v.w * m[2][3];
+	w = v.x * m[3][0] + v.y * m[3][1] + v.z * m[3][2] + v.w * m[3][3];
+	return vec4f(x, y, z, w);
 }
 
 inline Matrix4x4 Matrix4x4::operator*(float f) const
@@ -338,6 +350,16 @@ inline void Matrix4x4::scale(vec3f s)
 	M.m[0][0] *= s.x;
 	M.m[1][1] *= s.y;
 	M.m[2][2] *= s.z;
+
+	*this = *this * M;
+}
+
+inline void Matrix4x4::scale(float s)
+{
+	Matrix4x4 M;
+	M.m[0][0] *= s;
+	M.m[1][1] *= s;
+	M.m[2][2] *= s;
 
 	*this = *this * M;
 }
@@ -590,18 +612,6 @@ namespace vml
 		return clip * proj;
 	}
 
-	//right hand for default
-	inline Matrix4x4 ortho(float left, float right,float bottom, float top)
-	{
-		Matrix4x4 proj;
-		proj[0][0] = 2.f / (right - left);
-		proj[1][1] = 2.f / (top - bottom);
-		proj[2][2] = -1.f;
-		proj[0][3] = -(right + left) / (right - left);
-		proj[1][3] = -(top + bottom) / (top - bottom);
-		return proj;
-	}
-
 	//opengl static scale matrix
 	inline Matrix4x4 scale(const Matrix4x4 &mat, float s)
 	{
@@ -627,6 +637,31 @@ namespace vml
 		model.rotate(AXIS::Z, rz);
 		model.scale(vec3f(scale));
 		return model;
+	}
+
+	//right hand for default
+	inline Matrix4x4 ortho(float left, float right, float bottom, float top)
+	{
+		Matrix4x4 proj;
+		proj[0][0] = 2.f / (right - left);
+		proj[1][1] = 2.f / (top - bottom);
+		proj[2][2] = -1.f;
+		proj[0][3] = -(right + left) / (right - left);
+		proj[1][3] = -(top + bottom) / (top - bottom);
+		return proj;
+	}
+
+	inline Matrix4x4 ortho(
+		float left, float right, float bottom, float top, float znear, float zfar)
+	{
+		Matrix4x4 result;
+		result[0][0] = 2.f / (right - left);
+		result[1][1] = 2.f / (top - bottom);
+		result[2][2] = -(2.f) / (zfar - znear);
+		result[0][3] = -(right + left) / (right - left);
+		result[1][3] = -(top + bottom) / (top - bottom);
+		result[2][3] = -(zfar + znear) / (zfar - znear);
+		return result;
 	}
 }
 

@@ -7,6 +7,7 @@
 #include <Renderer.h>
 #include <terrainrenderer.h>
 #include <EnvironmentRenderer.h>
+#include <shadowrenderer.h>
 #include <chrono>
 
 typedef std::chrono::high_resolution_clock::time_point TimePoint;
@@ -27,7 +28,8 @@ public:
 	void run(
 		Renderer &renderer, 
 		TerrainRenderer &terrainRenderer,
-		EnvironmentRenderer &environRenderer);
+		EnvironmentRenderer &environRenderer,
+		ShadowRenderer &shadowRenderer);
 
 	//get frame time
 	static TimePoint last_frame_time;
@@ -39,6 +41,16 @@ public:
 	std::string title;
 	uint32_t width, height;
 
+	void debug(
+		GLuint shader,
+		Camera &camera,
+		GLuint texture,
+		const vec3f &sun,
+		const Matrix4x4 shadowProjectionView,
+		const Matrix4x4 shadowView,
+		std::vector<entity_ptr> &es,
+		std::vector<terrain_ptr> &ts,
+		float isShadowView);
 private:
 	SDL_Window* window;
 	SDL_GLContext context;

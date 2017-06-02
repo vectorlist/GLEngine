@@ -5,6 +5,9 @@
 #include <Application.h>
 #include <Initilizer.h>
 #include <terrainshader.h>
+#include <glm/mat4x4.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 void setConsoleOutput(int x, int y, int w, int h)
 {
@@ -27,12 +30,30 @@ int main(int args, char* argv[])
 	Initializer::initCamera(renderer);
 	Initializer::initScene(renderer);
 	Initializer::initTextures(renderer);
-
+	renderer.resize(app.width, app.height);
 	TerrainRenderer terrainRenderer;// (/**renderer.terrainShader*/);
 	EnvironmentRenderer environmentRenderer;
 
-	app.run(renderer, terrainRenderer, environmentRenderer);
-	//system("pause");
+	ShadowRenderer shadowRenderer(1280, 720,*renderer.camera.get());
+
+	app.run(renderer, terrainRenderer, environmentRenderer, shadowRenderer);
+
+
+	/*Matrix4x4 rot;
+	rot = vml::lookAt(vec3f(3, 3, 3), vec3f(1,0,0), vec3f(0, 1, 0));
+
+	LOG << rot * vec3f(1) << ENDL;
+	LOG << rot.inverted() << ENDL;
+
+	glm::mat4 p = glm::lookAt(glm::vec3(3, 3, 3), glm::vec3(1, 0, 0), glm::vec3(0, 1, 0));
+	glm::mat4 pp = glm::transpose(glm::inverse(p));
+	LOG << glm::to_string(p * glm::vec4(1)) << ENDL;
+	LOG << glm::to_string(pp[0]) << ENDL;
+	LOG << glm::to_string(pp[1]) << ENDL;
+	LOG << glm::to_string(pp[2]) << ENDL;
+	LOG << glm::to_string(pp[3]) << ENDL;
+	
+	system("pause");*/
 	return 0;
 }
 

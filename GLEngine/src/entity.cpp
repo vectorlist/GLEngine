@@ -20,6 +20,17 @@ void Entity::rotation(float x, float y, float z)
 	rot_z += z;
 }
 
+Matrix4x4 Entity::transform() const
+{
+	Matrix4x4 matrix;
+	matrix.translate(m_position);
+	matrix.rotate(AXIS::X, rot_x);
+	matrix.rotate(AXIS::Y, rot_y);
+	matrix.rotate(AXIS::Z, rot_z);
+	matrix.scale(m_scale);
+	return matrix;
+}
+
 float Entity::get_texture_offset_x()
 {
 	//TODO	get offset of texture terrain
@@ -32,3 +43,4 @@ float Entity::get_texture_offset_z()
 	//TODO
 	return 0.0f;
 }
+

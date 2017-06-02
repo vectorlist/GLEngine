@@ -9,6 +9,8 @@
 #include <fstream>
 #include <sstream>
 
+#define LOAD_SHADER(x,xx) ShaderTool::load(x,xx)
+
 namespace ShaderTool
 {
 	GLuint load(const char* vertfile, const char* fragfile);

@@ -8,6 +8,11 @@
 #include <texture.h>
 #include <loadmanager.h>
 
+float Renderer::FOV = 70.f;
+float Renderer::NEAR_PLANE = 0.1f;
+uint32_t Renderer::width = 0;
+uint32_t Renderer::height = 0;
+
 Renderer::Renderer()
 	: AbstractRenderer()
 {
@@ -29,7 +34,7 @@ void Renderer::initialize()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	auto text = text_ptr(new Text(FILE_TEXT_SEGOEUI, 16));
 	*this << text;
 }
@@ -42,7 +47,7 @@ void Renderer::render()
 	switch (mode)
 	{
 	case RENDER_FORWARD:
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		renderEntities();
 		break;
 	case RENDER_TERRIAN:
@@ -62,7 +67,8 @@ void Renderer::resize(uint32_t width, uint32_t height)
 	this->width = width;
 	this->height = height;
 	aspect_ratio = float(width) / float(height);
-	projection.proj = vml::perspective(45.f, aspect_ratio, 0.001f, 1000.f);
+	//projection.proj = vml::perspective(45.f, aspect_ratio, 0.001f, 1000.f);
+	camera->setProjection(45.0f, aspect_ratio, 0.001f, 1000.f);
 	projection.text = vml::ortho(0.f, (float)width, 0.f, (float)height);
 	glViewport(0, 0, width, height);
 }
@@ -76,23 +82,26 @@ void Renderer::initUniforms()
 	light.color = vec3f(0.9 , 0.87, 0.7);
 	light.attenuation = vec3f(5, 0, 0);
 	vec3f skyColor = vec3f(0.8, 0.85, 0.9);
+
+	/*auto pp = vml::ortho(-10, 10, -10, 10, 1, 10.f);
+	auto ppp = pp * vml::lookAt(vec3f(5, 5, 5), vec3f(0), vec3f(0, 1, 0));*/
 	//FORWARD
 	forwardShader->bind();
-	forwardShader->setProjectionMatrix(projection.proj);
+	forwardShader->setProjectionMatrix(camera->projectionMatrix());
 	forwardShader->setLightColor(light.color);
 	forwardShader->setLightpos(light.position);
 	forwardShader->setSkyColor(skyColor);
 	forwardShader->unbind();
 	//TERRAIN
 	terrainShader->bind();
-	terrainShader->setProjectionMatrix(projection.proj);
+	terrainShader->setProjectionMatrix(camera->projectionMatrix());
 	terrainShader->setLightColor(light.color);
 	terrainShader->setLightpos(light.position);
 	terrainShader->setSkyColor(skyColor);
 	terrainShader->unbind();
 	//ENVIRONMENT
 	skyShader->bind();
-	skyShader->setProjectionMatrix(projection.proj);
+	skyShader->setProjectionMatrix(camera->projectionMatrix());
 	skyShader->setFogColor(skyColor);
 	skyShader->unbind();
 

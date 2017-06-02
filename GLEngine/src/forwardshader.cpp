@@ -10,6 +10,7 @@ ForwardShader::ForwardShader(const char * vert, const char * frag)
 void ForwardShader::buildUniformLocations()
 {
 	bind();
+
 	loc.proj = setUniformLocation("proj");
 	loc.view = setUniformLocation("view");
 	loc.model = setUniformLocation("model");

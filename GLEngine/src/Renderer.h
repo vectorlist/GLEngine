@@ -8,6 +8,8 @@
 #include <terrainshader.h>
 #include <skyshader.h>
 
+
+
 class Camera;
 class Renderer : public AbstractRenderer
 {
@@ -37,8 +39,13 @@ public:
 	void updateUniforms();
 	void rebuildShaders();
 
-	//Renderer
+	//STATIC
+	static float FOV;
+	static float NEAR_PLANE;
+	static uint32_t width;
+	static uint32_t height;
 	
+	float isShadowView = 0.0f;
 private:
 	//redner mode
 	void renderEntities();
