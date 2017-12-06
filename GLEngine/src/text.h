@@ -30,7 +30,7 @@ class Text
 public:
 	Text(const std::string fontPath, uint32_t fontSize);
 	~Text();
-
+	
 	GLuint vao, vbo;
 	std::string font_path;
 	uint32_t font_size;

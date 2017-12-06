@@ -6,10 +6,6 @@ Text::Text(const std::string fontPath, uint32_t fontSize)
 	: font_path(fontPath), font_size(fontSize)
 {
 	initialize();
-	//buildBuffer();
-
-	////build projection matrix
-	//proj = vml::ortho(0, width, 0, height);
 }
 
 Text::~Text()
@@ -38,12 +34,13 @@ void Text::initialize()
 
 	for (GLubyte c = 0; c < 128; ++c) 
 	{
+
 		if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 			//skip if c empty
 			continue;
 		}
 
-		//auto& bitmap = face->glyph->bitmap;
+		auto& bitmap = face->glyph->bitmap;
 
 		GLuint texture;
 		glGenTextures(1, &texture);
@@ -141,6 +138,11 @@ void Text::render(
 
 		float w = font.size.x * scale;
 		float h = font.size.y * scale;
+
+		if (c == ' ') {
+
+			int g = 10;
+		}
 
 		//vertex for plane with uv
 		float vertices[6][4] = {
